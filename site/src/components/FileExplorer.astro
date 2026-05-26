@@ -1,0 +1,46 @@
+---
+const { files } = Astro.props;
+const first = files[0]?.path ?? "";
+---
+
+<section class="file-explorer" data-file-explorer>
+  <div class="file-tree" aria-label="Recipe files">
+    {files.map((file) => (
+      <button class:list={["file-node", file.path === first && "active"]} type="button" data-file-target={file.path}>
+        <span>{file.path}</span>
+      </button>
+    ))}
+  </div>
+  <div class="file-viewer">
+    {files.map((file) => (
+      <section class:list={["file-panel", file.path !== first && "hidden"]} data-file-panel={file.path}>
+        <div class="file-panel-header">
+          <strong>{file.path}</strong>
+          <span>{file.language}</span>
+        </div>
+        <pre><code>{file.content}</code></pre>
+      </section>
+    ))}
+  </div>
+</section>
+
+<script>
+  for (const explorer of document.querySelectorAll("[data-file-explorer]")) {
+    const nodes = Array.from(explorer.querySelectorAll("[data-file-target]"));
+    const panels = Array.from(explorer.querySelectorAll("[data-file-panel]"));
+
+    for (const node of nodes) {
+      node.addEventListener("click", () => {
+        const target = node.getAttribute("data-file-target");
+
+        for (const current of nodes) {
+          current.classList.toggle("active", current === node);
+        }
+
+        for (const panel of panels) {
+          panel.classList.toggle("hidden", panel.getAttribute("data-file-panel") !== target);
+        }
+      });
+    }
+  }
+</script>

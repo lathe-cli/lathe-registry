@@ -1,0 +1,500 @@
+commands:
+  # ── 平台内部 API，不对外暴露 ──────────────────────────────────────────
+  # FeatureGate
+  list-feature-gates:    { ignore: true }
+  get-feature-gate:      { ignore: true }
+  update-feature-gate:   { ignore: true }
+
+  # SettingService
+  get-setting:           { ignore: true }
+  update-setting:        { ignore: true }
+
+  # StreamService
+  stream:                { ignore: true }
+
+  # ── 集群 (Cluster) ────────────────────────────────────────────────────
+  list-clusters:
+    short: "List all managed clusters"
+    aliases: [ls, ls-clusters]
+    example: |
+      dc container-management cluster list-clusters
+      dc container-management cluster list-clusters -o json | jq '.items[].name'
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  create-cluster:
+    short: "Register or create a cluster"
+    example: |
+      dc container-management cluster create-cluster --file cluster.json
+
+  get-cluster:
+    short: "Get cluster details"
+    aliases: [describe, describe-cluster]
+    example: |
+      dc container-management cluster get-cluster --name prod-cluster
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  delete-cluster:
+    short: "Remove a cluster from management"
+
+  update-clusters:
+    short: "Update cluster configuration"
+
+  get-cluster-kube-config:
+    short: "Download kubeconfig for a cluster"
+    aliases: [kubeconfig]
+    example: |
+      dc container-management cluster get-cluster-kube-config --cluster prod-cluster -o raw > kubeconfig.yaml
+
+  validate-kube-config:
+    short: "Validate a kubeconfig before registration"
+
+  list-cluster-summary:
+    short: "List cluster summary (lightweight)"
+    aliases: [summary]
+
+  # ── 命名空间 (Core/Namespace) ─────────────────────────────────────────
+  list-namespaces:
+    short: "List namespaces in a cluster"
+    aliases: [ls-ns]
+    example: |
+      dc container-management core list-namespaces --cluster prod-cluster
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-cluster-namespaces:
+    short: "List all namespaces across a cluster"
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  # ── 工作负载 (Apps) ───────────────────────────────────────────────────
+  list-deployments:
+    short: "List Deployments in a namespace"
+    aliases: [ls-deploy]
+    example: |
+      dc container-management apps list-deployments \
+        --cluster prod-cluster \
+        --namespace default
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-stateful-sets:
+    short: "List StatefulSets in a namespace"
+    aliases: [ls-sts]
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-daemon-sets:
+    short: "List DaemonSets in a namespace"
+    aliases: [ls-ds]
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-all-deployments:
+    short: "List Deployments across all namespaces in a cluster"
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-all-stateful-sets:
+    short: "List StatefulSets across all namespaces in a cluster"
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-all-daemon-sets:
+    short: "List DaemonSets across all namespaces in a cluster"
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  # ── 权限 (RBAC) ───────────────────────────────────────────────────────
+  list-cluster-roles:
+    short: "List ClusterRoles"
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-cluster-role-bindings:
+    short: "List ClusterRoleBindings"
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-role-bindings:
+    short: "List RoleBindings in a namespace"
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  # ── 网络 (Networking) ─────────────────────────────────────────────────
+  list-ingresses:
+    short: "List Ingresses in a namespace"
+    aliases: [ls-ing]
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  create-ingress:
+    short: "Create an Ingress"
+
+  get-ingress:
+    short: "Get Ingress details"
+
+  delete-ingress:
+    short: "Delete an Ingress"
+
+  # ── 存储 (Storage) ────────────────────────────────────────────────────
+  list-persistent-volumes:
+    short: "List PersistentVolumes in a cluster"
+    aliases: [ls-pv]
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-persistent-volume-claims:
+    short: "List PersistentVolumeClaims in a namespace"
+    aliases: [ls-pvc]
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  # ── 批处理 (Batch) ────────────────────────────────────────────────────
+  list-jobs:
+    short: "List Jobs in a namespace"
+    aliases: [ls-jobs]
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-cron-jobs:
+    short: "List CronJobs in a namespace"
+    aliases: [ls-cj]
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  # ── 插件 (Addon) ──────────────────────────────────────────────────────
+  list-addons:
+    short: "List available cluster addons"
+    aliases: [ls-addons]
+
+  install-addon:
+    short: "Install an addon to a cluster"
+
+  uninstall-addon:
+    short: "Uninstall an addon from a cluster"
+
+  # ── 分页默认值 (其余分页命令) ─────────────────────────────────────────────
+  list-clusterlcm-ops:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-cluster-helm-operations:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-cluster-helm-releases:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-helm-charts:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-helm-operations:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-helm-release-resources:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-helm-releases:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-helm-repos:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-cluster-custom-resources:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-custom-resource-definitions:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-custom-resources:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-cluster-daemon-sets:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-cluster-deployments:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-cluster-replica-sets:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-cluster-stateful-sets:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-controller-revisions:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-replica-sets:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-cron-horizontal-pod-autoscalers:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-horizontal-pod-autoscalers:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-vertical-pod-autoscalers:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-all-cron-jobs:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-all-jobs:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-cluster-cron-jobs:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-cluster-jobs:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-jobs-by-cron-jobs-name:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-all-pods:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-cluster-config-maps:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-cluster-events:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-cluster-limit-ranges:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-cluster-persistent-volume-claims:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-cluster-pods:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-cluster-secrets:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-cluster-services:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-config-maps:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-containers-by-pod:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-events:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-limit-ranges:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-nodes:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-pods:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-pods-by-node:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-resource-quotas:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-secrets:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-service-accounts:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-services:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-etcd-backup-strategies:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-artifacts:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-projects:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-registries:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-repositories:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-cluster-ingresses:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-cluster-network-policies:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-metallb-ip-address-pools:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-network-policies:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-groups:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-roles:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-users:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-accessible-storage-classes:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-cluster-volume-snapshots:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-storage-classes:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-volume-snapshots:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  get-pod-container-log:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }

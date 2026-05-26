@@ -1,0 +1,9 @@
+node_modules/
+site/node_modules/
+site/.astro/
+site/dist/
+.DS_Store
+.dev-server.log
+.dev-server.pid
+.qa/
+.preview/

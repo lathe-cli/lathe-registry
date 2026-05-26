@@ -1,0 +1,42 @@
+---
+import "../styles/global.css";
+import { sitePath } from "../lib/paths";
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = "Community registry for reproducible Lathe CLI recipes." } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content={description} />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href={sitePath("")}>
+        <span class="brand-mark">
+          <img src={sitePath("lathe-cli-logo.png")} alt="Lathe" />
+        </span>
+        <span>
+          <strong>Lathe Registry</strong>
+          <small>CLI recipes for agents</small>
+        </span>
+      </a>
+      <nav class="top-nav" aria-label="Primary">
+        <a href={sitePath("")}>CLI Registry</a>
+        <a href={sitePath("submit/")}>Submit</a>
+        <a href="https://github.com/lathe-cli/lathe-registry">GitHub</a>
+      </nav>
+    </header>
+    <main>
+      <slot />
+    </main>
+  </body>
+</html>

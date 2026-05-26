@@ -1,0 +1,68 @@
+---
+import { sitePath } from "../lib/paths";
+
+const { recipe } = Astro.props;
+const skillArtifact = recipe.artifacts.find((artifact) => artifact.kind === "skill");
+const cliArtifact = recipe.artifacts.find((artifact) => artifact.kind === "cli");
+const recipeUrl = `https://github.com/lathe-cli/lathe-registry/tree/main/${recipe.recipe_path}`;
+const prompt = `Install the Lathe registry recipe "${recipe.name}".
+
+Use the recipe source from:
+${recipeUrl}
+
+Clone the registry, copy the recipe into a new workspace, inspect cli.yaml and specs/sources.yaml, run Lathe bootstrap/codegen, build the generated CLI, then install the generated Skill only after verifying the catalog with:
+${recipe.cli_name} commands schema --json
+${recipe.cli_name} commands --json
+${recipe.cli_name} search "${recipe.smoke.intent}" --json`;
+---
+
+<aside class="action-panel">
+  <div class="panel-head">
+    <span class="panel-label">Install surface</span>
+    <h2><code>{recipe.cli_name}</code></h2>
+    <p>{recipe.auth.notes}</p>
+  </div>
+
+  {cliArtifact ? (
+    <a class="button primary block" href={sitePath(cliArtifact.path)} download>Download CLI</a>
+  ) : (
+    <button class="button block" type="button" disabled>CLI artifact pending</button>
+  )}
+
+  {skillArtifact ? (
+    <a class="button block" href={sitePath(skillArtifact.path)} download>Download Skill</a>
+  ) : (
+    <button class="button block" type="button" disabled>Skill pending</button>
+  )}
+
+  <button class="button block" type="button" data-copy-prompt={prompt}>Copy install prompt</button>
+  <a class="button ghost block" href={recipeUrl}>View recipe source</a>
+
+  <div class="prompt-preview">
+    <span class="panel-label">Agent prompt</span>
+    <code>Install recipe "{recipe.name}" and verify {recipe.cli_name} catalog.</code>
+  </div>
+
+  <div class="source-list">
+    <span class="panel-label">Pinned sources</span>
+    {recipe.source_refs.map((source) => (
+      <p>
+        <strong>{source.display_name}</strong>
+        <code>{source.pinned_tag}</code>
+      </p>
+    ))}
+  </div>
+</aside>
+
+<script>
+  for (const button of document.querySelectorAll("[data-copy-prompt]")) {
+    button.addEventListener("click", async () => {
+      const value = button.getAttribute("data-copy-prompt") || "";
+      button.textContent = "Prompt copied";
+      await navigator.clipboard?.writeText(value).catch(() => undefined);
+      setTimeout(() => {
+        button.textContent = "Copy install prompt";
+      }, 1600);
+    });
+  }
+</script>

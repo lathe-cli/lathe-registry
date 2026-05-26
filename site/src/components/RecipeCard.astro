@@ -1,0 +1,44 @@
+---
+import { sitePath } from "../lib/paths";
+
+const { recipe } = Astro.props;
+const sourceCount = recipe.source_refs.length;
+const skillReady = recipe.skill_path ? "Skill ready" : "Skill pending";
+const sourceNames = recipe.source_refs.map((source) => source.display_name).join(" / ");
+const sourceSearchNames = recipe.source_refs.map((source) => `${source.name} ${source.display_name}`).join(" ");
+const searchText = [
+  recipe.display_name,
+  recipe.name,
+  recipe.cli_name,
+  recipe.category,
+  recipe.description,
+  sourceNames,
+  sourceSearchNames
+].join(" ").toLowerCase();
+---
+
+<article class="recipe-row" data-recipe-card data-search-text={searchText}>
+  <div class="recipe-row-main">
+    <strong>{recipe.display_name}</strong>
+    <span>{recipe.description}</span>
+  </div>
+  <div class="recipe-row-code">
+    <code>{recipe.cli_name}</code>
+  </div>
+  <div class="recipe-row-meta">
+    <span>{recipe.category}</span>
+    <span>{recipe.auth.type} auth</span>
+  </div>
+  <div class="recipe-row-sources">
+    <strong>{sourceCount}</strong>
+    <span>{sourceNames}</span>
+  </div>
+  <div class="recipe-row-status">
+    <span>{skillReady}</span>
+    <small>Smoke: {recipe.smoke.intent}</small>
+  </div>
+  <div class="recipe-row-actions">
+    <a class="button compact primary" href={sitePath(`cli/${recipe.name}/`)}>Details</a>
+    {recipe.skill_path && <a class="button compact ghost" href={sitePath(`downloads/${recipe.name}-skill.tar.gz`)} download>Skill</a>}
+  </div>
+</article>

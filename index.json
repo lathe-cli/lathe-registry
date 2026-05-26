@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "generated_at": "1970-01-01T00:00:00.000Z",
+  "recipes": [
+    {
+      "name": "daocloud-dce",
+      "display_name": "DaoCloud Enterprise",
+      "cli_name": "dc",
+      "category": "cloud-platform",
+      "description": "Generated dc CLI and agent Skill for DaoCloud Enterprise APIs.",
+      "auth": {
+        "type": "bearer",
+        "notes": "Requires a reachable DCE instance and token-based login."
+      },
+      "recipe_path": "recipes/daocloud-dce",
+      "readme_path": "recipes/daocloud-dce/README.md",
+      "catalog_path": "",
+      "skill_path": "skills/dc",
+      "build_path": "builds/daocloud-dce.json",
+      "artifacts": [
+        {
+          "kind": "skill",
+          "label": "Download Skill",
+          "path": "downloads/daocloud-dce-skill.tar.gz"
+        }
+      ],
+      "source_refs": [
+        {
+          "name": "ghippo",
+          "display_name": "global-management",
+          "backend": "swagger",
+          "repo_url": "https://github.com/DaoCloud/daocloud-api-docs.git",
+          "pinned_tag": "4bc92dd4c0c1637b4257f69e26eb8dd6cdd269f3",
+          "files": [
+            "docs/openapi/ghippo/v0.45.1.json"
+          ]
+        },
+        {
+          "name": "kpanda",
+          "display_name": "container-management",
+          "backend": "swagger",
+          "repo_url": "https://github.com/DaoCloud/daocloud-api-docs.git",
+          "pinned_tag": "4bc92dd4c0c1637b4257f69e26eb8dd6cdd269f3",
+          "files": [
+            "docs/openapi/kpanda/v0.46.0.json"
+          ]
+        },
+        {
+          "name": "insight",
+          "display_name": "insight",
+          "backend": "swagger",
+          "repo_url": "https://github.com/DaoCloud/daocloud-api-docs.git",
+          "pinned_tag": "4bc92dd4c0c1637b4257f69e26eb8dd6cdd269f3",
+          "files": [
+            "docs/openapi/insight/v0.41.0.json"
+          ]
+        }
+      ]
+    }
+  ]
+}

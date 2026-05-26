@@ -1,0 +1,53 @@
+---
+import SiteShell from "../layouts/SiteShell.astro";
+---
+
+<SiteShell title="Submit a recipe">
+  <section class="page-heading">
+    <h1>Submit a recipe</h1>
+    <p>Contribute pinned Lathe inputs that can regenerate a CLI, catalog, and Skill.</p>
+  </section>
+
+  <section class="doc-page">
+    <div class="process-grid">
+      <div>
+        <span class="panel-label">01</span>
+        <h2>Shape the recipe</h2>
+        <p>Keep the source small, pinned, and reviewable.</p>
+      </div>
+      <div>
+        <span class="panel-label">02</span>
+        <h2>Generate proof</h2>
+        <p>Catalog, Skill, and smoke checks must come from the recipe.</p>
+      </div>
+      <div>
+        <span class="panel-label">03</span>
+        <h2>Open the PR</h2>
+        <p>Submit the recipe, not generated code as the authority.</p>
+      </div>
+    </div>
+
+    <h2>Required shape</h2>
+    <pre><code>recipes/&lt;name&gt;/
+  lathe.yaml
+  cli.yaml
+  specs/sources.yaml
+  overlays/
+  README.md</code></pre>
+
+    <h2>Rules</h2>
+    <ul>
+      <li>Submit reproducible recipes, not generated code as source.</li>
+      <li>Pin upstream specs in `specs/sources.yaml`.</li>
+      <li>Describe auth requirements in `lathe.yaml` and `README.md`.</li>
+      <li>Keep overlays focused on command names, grouping, summaries, aliases, and parameter help.</li>
+      <li>Add a smoke intent that proves catalog search works.</li>
+    </ul>
+
+    <h2>Generated evidence</h2>
+    <p>Registry automation may publish catalog snapshots, Skill bundles, build metadata, and website data. Those outputs must remain reproducible from the recipe.</p>
+
+    <h2>Reference recipe</h2>
+    <p>Use `recipes/daocloud-dce` as the first real template for a multi-source API with auth and overlays.</p>
+  </section>
+</SiteShell>

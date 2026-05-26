@@ -1,0 +1,17 @@
+{
+  "scripts": {
+    "generate": "node scripts/generate-site-data.mjs",
+    "build": "npm run generate && npm --prefix site run build",
+    "dev": "npm run generate && npm --prefix site run dev -- --port 4321",
+    "preview": "npm --prefix site run preview -- --port 4321"
+  },
+  "dependencies": {
+    "fast-glob": "^3.3.3",
+    "js-yaml": "^4.1.0",
+    "tar": "^7.4.3"
+  },
+  "devDependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1"
+  }
+}

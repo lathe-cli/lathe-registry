@@ -1,0 +1,13 @@
+name: daocloud-dce
+display_name: DaoCloud Enterprise
+cli_name: dc
+category: cloud-platform
+homepage: https://github.com/DaoCloud/daocloud-skills
+description: Generated dc CLI and agent Skill for DaoCloud Enterprise APIs.
+maintainers:
+  - github: samzong
+auth:
+  type: bearer
+  notes: Requires a reachable DCE instance and token-based login.
+smoke:
+  intent: list clusters

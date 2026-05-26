@@ -1,0 +1,96 @@
+---
+import { Marked } from "marked";
+import SiteShell from "../../layouts/SiteShell.astro";
+import FileExplorer from "../../components/FileExplorer.astro";
+import ActionPanel from "../../components/ActionPanel.astro";
+import { sitePath } from "../../lib/paths";
+import registry from "../../data/registry.json";
+
+export function getStaticPaths() {
+  return registry.recipes.map((recipe) => ({
+    params: { name: recipe.name },
+    props: { recipe }
+  }));
+}
+
+const { recipe } = Astro.props;
+const safeMarked = new Marked({
+  renderer: {
+    html({ text }) {
+      return escapeHtml(text);
+    }
+  }
+});
+const readme = safeMarked.parse(recipe.readme_markdown);
+const fileCount = recipe.files.length;
+
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, (char) => {
+    const entities: Record<string, string> = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      "\"": "&quot;",
+      "'": "&#39;"
+    };
+    return entities[char] ?? char;
+  });
+}
+---
+
+<SiteShell title={`${recipe.display_name} | Lathe Registry`} description={recipe.description}>
+  <section class="detail-header">
+    <div class="detail-header-top">
+      <a class="back-link" href={sitePath("")}>Back to registry</a>
+      <div class="detail-tags">
+        <span>{recipe.category}</span>
+        <span>{recipe.auth.type} auth</span>
+        <span>{fileCount} files</span>
+      </div>
+    </div>
+    <div class="detail-header-grid">
+      <div>
+        <h1>{recipe.display_name}</h1>
+        <p>{recipe.description}</p>
+      </div>
+      <div class="detail-command">
+        <span>$</span>
+        <code>{recipe.cli_name} search "{recipe.smoke.intent}" --json</code>
+      </div>
+    </div>
+    <div class="workflow-panel">
+      <div>
+        <span>01</span>
+        <strong>Schema</strong>
+        <code>{recipe.cli_name} commands schema --json</code>
+      </div>
+      <div>
+        <span>02</span>
+        <strong>Catalog</strong>
+        <code>{recipe.cli_name} commands --json</code>
+      </div>
+      <div>
+        <span>03</span>
+        <strong>Inspect</strong>
+        <code>{recipe.cli_name} commands show ... --json</code>
+      </div>
+    </div>
+  </section>
+
+  <section class="detail-workbench">
+    <div class="detail-main">
+      <section class="files-section">
+        <div class="section-head">
+          <div>
+            <span class="panel-label">Recipe structure</span>
+            <h2>Files</h2>
+          </div>
+          <span>{fileCount} files</span>
+        </div>
+        <FileExplorer files={recipe.files} />
+      </section>
+      <article class="readme-content" set:html={readme} />
+    </div>
+    <ActionPanel recipe={recipe} />
+  </section>
+</SiteShell>

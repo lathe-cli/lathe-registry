@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "recipe": "daocloud-dce",
+  "cli_name": "dc",
+  "generated_at": "1970-01-01T00:00:00.000Z",
+  "lathe_version": "pending-local-generation",
+  "source_refs": [
+    {
+      "name": "ghippo",
+      "display_name": "global-management",
+      "backend": "swagger",
+      "repo_url": "https://github.com/DaoCloud/daocloud-api-docs.git",
+      "pinned_tag": "4bc92dd4c0c1637b4257f69e26eb8dd6cdd269f3",
+      "files": [
+        "docs/openapi/ghippo/v0.45.1.json"
+      ]
+    },
+    {
+      "name": "kpanda",
+      "display_name": "container-management",
+      "backend": "swagger",
+      "repo_url": "https://github.com/DaoCloud/daocloud-api-docs.git",
+      "pinned_tag": "4bc92dd4c0c1637b4257f69e26eb8dd6cdd269f3",
+      "files": [
+        "docs/openapi/kpanda/v0.46.0.json"
+      ]
+    },
+    {
+      "name": "insight",
+      "display_name": "insight",
+      "backend": "swagger",
+      "repo_url": "https://github.com/DaoCloud/daocloud-api-docs.git",
+      "pinned_tag": "4bc92dd4c0c1637b4257f69e26eb8dd6cdd269f3",
+      "files": [
+        "docs/openapi/insight/v0.41.0.json"
+      ]
+    }
+  ],
+  "outputs": {
+    "catalog": null,
+    "skill": "skills/dc",
+    "cli_artifacts": []
+  }
+}

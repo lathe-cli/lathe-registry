@@ -1,0 +1,53 @@
+name: validate
+
+on:
+  pull_request:
+    paths:
+      - "recipes/**"
+      - "schema/**"
+      - "scripts/**"
+      - "site/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/**"
+  push:
+    branches:
+      - main
+    paths:
+      - "recipes/**"
+      - "schema/**"
+      - "scripts/**"
+      - "site/**"
+      - "package.json"
+      - "package-lock.json"
+      - ".github/workflows/**"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm --prefix site ci
+      - run: npm run build
+      - uses: actions/configure-pages@v5
+        if: github.event_name == 'push'
+      - uses: actions/upload-pages-artifact@v3
+        if: github.event_name == 'push'
+        with:
+          path: site/dist
+      - uses: actions/deploy-pages@v4
+        if: github.event_name == 'push'

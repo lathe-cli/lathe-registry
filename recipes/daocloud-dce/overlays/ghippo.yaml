@@ -1,0 +1,463 @@
+commands:
+  # ── 平台内部 API，不对外暴露 ──────────────────────────────────────────
+  # BatchAudits
+  batch-insert-audits:   { ignore: true }
+
+  # FeatureGate
+  get-feature-gate:      { ignore: true }
+
+  # GProducts / GProductLicenses
+  list-g-products:             { ignore: true }
+  get-g-product:               { ignore: true }
+  list-g-product-licenses:     { ignore: true }
+  get-g-product-license:       { ignore: true }
+  create-g-product-license:    { ignore: true }
+  delete-g-product-license:    { ignore: true }
+  update-g-product-license:    { ignore: true }
+
+  # KeycloakEvent
+  list-keycloak-events:  { ignore: true }
+
+  # LoginPage
+  get-login-page:        { ignore: true }
+  update-login-page:     { ignore: true }
+
+  # Openapi
+  get-open-api:          { ignore: true }
+
+  # ProductNavigator / TopNavigator
+  list-product-navigators: { ignore: true }
+  get-product-navigator:   { ignore: true }
+  update-product-navigator: { ignore: true }
+  list-top-navigators:     { ignore: true }
+  get-top-navigator:       { ignore: true }
+  update-top-navigator:    { ignore: true }
+
+  # Publish
+  publish:               { ignore: true }
+
+  # Sms / SmtpSetting
+  get-sms-config:        { ignore: true }
+  update-sms-config:     { ignore: true }
+  send-sms:              { ignore: true }
+  get-smtp-setting:      { ignore: true }
+  update-smtp-setting:   { ignore: true }
+  test-smtp-setting:     { ignore: true }
+
+  # Theme
+  list-themes:           { ignore: true }
+  get-theme:             { ignore: true }
+  update-theme:          { ignore: true }
+  create-theme:          { ignore: true }
+  delete-theme:          { ignore: true }
+
+  # ── 用户管理 (Users) ──────────────────────────────────────────────────
+  list-users:
+    short: "List platform users"
+    aliases: [ls-users]
+    example: |
+      dc global-management users list-users
+      dc global-management users list-users --page-size 50 -o json
+    params:
+      keyword:
+        help: "Filter by username or email"
+      page:
+        default: "1"
+      pageSize:
+        help: "Number of results per page"
+        default: "20"
+
+  create-user:
+    short: "Create a new platform user"
+    example: |
+      dc global-management users create-user \
+        --set name=alice \
+        --set password=changeme \
+        --set description="Alice from dev team" \
+        --set temporary=false
+
+  get-user:
+    short: "Get user details by ID"
+    aliases: [describe-user]
+
+  delete-user:
+    short: "Delete a user by ID"
+
+  update-user:
+    short: "Update user profile"
+    example: |
+      dc global-management users update-user --id <id> \
+        --set email=newemail@example.com \
+        --set firstname=Alice \
+        --set lastname=Smith \
+        --set description="updated" \
+        --set enabled=true
+
+  set-user-password:
+    short: "Set or reset a user's password"
+    example: |
+      dc global-management users set-user-password --id <id> \
+        --set password=NewP@ssw0rd
+
+  reset-user-m-f-a:
+    short: "Reset MFA for a user"
+
+  list-user-roles:
+    short: "List roles assigned to a user"
+    params:
+      page:
+        default: "1"
+      pageSize:
+        default: "20"
+
+  update-user-roles:
+    short: "Assign or update roles for a user"
+    example: |
+      # Add roles
+      echo '{"addRoles":["Admin"],"removeRoles":[]}' | \
+        dc global-management users update-user-roles --id <id> --file -
+      # Remove roles
+      echo '{"addRoles":[],"removeRoles":["Editor"]}' | \
+        dc global-management users update-user-roles --id <id> --file -
+
+  list-user-groups:
+    short: "List groups a user belongs to"
+    params:
+      page:
+        default: "1"
+      pageSize:
+        default: "20"
+
+  create-user-access-token:
+    short: "Create an access token for a user"
+    example: |
+      dc global-management users create-user-access-token --id <id> \
+        --set name=my-token \
+        --set expiredAt=2026-12-31T00:00:00Z
+
+  list-user-access-tokens:
+    short: "List access tokens for a user"
+
+  delete-user-access-token:
+    short: "Delete an access token"
+
+  # ── 用户组 (Group) ────────────────────────────────────────────────────
+  list-groups:
+    short: "List user groups"
+    aliases: [ls-groups]
+    params:
+      page:
+        default: "1"
+      pageSize:
+        default: "20"
+
+  create-group:
+    short: "Create a user group"
+    example: |
+      dc global-management group create-group \
+        --set name=dev-team \
+        --set description="Development team"
+
+  get-group:
+    short: "Get group details"
+    aliases: [describe-group]
+
+  delete-group:
+    short: "Delete a user group"
+
+  update-group:
+    short: "Update a user group"
+    example: |
+      dc global-management group update-group --id <id> \
+        --set name=dev-team-renamed \
+        --set description="Renamed team"
+
+  # ── 工作空间 (Workspace) ──────────────────────────────────────────────
+  list-workspaces:
+    short: "List workspaces"
+    aliases: [ls-ws, ls-workspaces]
+    example: |
+      dc global-management workspace list-workspaces
+      dc global-management workspace list-workspaces -o json
+    params:
+      page:
+        default: "1"
+      pageSize:
+        default: "20"
+
+  create-workspace:
+    short: "Create a workspace"
+    example: |
+      # alias is the display name; parentFolderId=0 places it under root
+      dc global-management workspace create-workspace \
+        --set alias=my-workspace \
+        --set parentFolderId=0
+
+  get-workspace:
+    short: "Get workspace details"
+    aliases: [describe-workspace]
+
+  delete-workspace:
+    short: "Delete a workspace"
+
+  update-workspace:
+    short: "Update a workspace"
+
+  list-folders:
+    short: "List folders (namespaces within workspaces)"
+    aliases: [ls-folders]
+    params:
+      page:
+        default: "1"
+      pageSize:
+        default: "20"
+
+  create-folder:
+    short: "Create a folder"
+    example: |
+      # alias is the display name; parentFolderId=0 places it under root
+      dc global-management workspace create-folder \
+        --set alias=my-folder \
+        --set parentFolderId=0
+
+  get-folder:
+    short: "Get folder details"
+
+  delete-folder:
+    short: "Delete a folder"
+
+  update-folder:
+    short: "Update a folder"
+    example: |
+      dc global-management workspace update-folder --folder-id <id> \
+        --set alias=new-folder-name
+
+  authorize:
+    short: "Grant a role to a user or group within a folder"
+    example: |
+      dc global-management workspace authorize --folder-id <folderId> \
+        --set memberId=<userId> \
+        --set memberType=user \
+        --set memberName=alice \
+        --set-str 'roleNames[0]=Workspace Admin'
+
+  # ── 角色 (Role) ───────────────────────────────────────────────────────
+  list-roles:
+    short: "List platform roles"
+    aliases: [ls-roles]
+    params:
+      page:
+        default: "1"
+      pageSize:
+        default: "20"
+
+  create-role:
+    short: "Create a custom role"
+    example: |
+      # scope: platform | folder | workspace
+      echo '{
+        "name": "my-role",
+        "description": "Custom role",
+        "scope": "platform",
+        "perms": [
+          {"gproduct": "ghippo", "resourceType": "User", "action": "get"}
+        ]
+      }' | dc global-management role create-role --file -
+
+  get-role:
+    short: "Get role details"
+
+  delete-role:
+    short: "Delete a custom role"
+
+  update-role:
+    short: "Update a custom role"
+    example: |
+      echo '{
+        "description": "Updated description",
+        "perms": [
+          {"gproduct": "ghippo", "resourceType": "User", "action": "get"}
+        ]
+      }' | dc global-management role update-role --name <name> --file -
+
+  list-all-permissions:
+    short: "List all available permissions"
+    params:
+      page:
+        default: "1"
+      pageSize:
+        default: "20"
+
+  # ── 身份提供商 (IDP / LDAP) ───────────────────────────────────────────
+  list-i-d-ps:
+    short: "List configured identity providers"
+    aliases: [ls-idp]
+
+  create-i-d-p:
+    short: "Configure a new identity provider"
+
+  get-i-d-p:
+    short: "Get identity provider details"
+
+  delete-i-d-p:
+    short: "Remove an identity provider"
+
+  update-i-d-p:
+    short: "Update an identity provider"
+
+  list-ldap-config:
+    short: "List LDAP configurations"
+
+  # ── 审计 (Audit) ──────────────────────────────────────────────────────
+  list-audits:
+    short: "List audit log entries"
+    aliases: [ls-audit]
+    example: |
+      dc global-management audit list-audits --page-size 100 -o json
+    params:
+      page:
+        default: "1"
+      pageSize:
+        default: "20"
+
+  # ── 消息 (Message) ────────────────────────────────────────────────────
+  list-messages:
+    short: "List platform messages/notifications"
+    params:
+      page:
+        default: "1"
+      pageSize:
+        default: "20"
+
+  # ── 安全策略 (SecurityPolicy) ─────────────────────────────────────────
+  get-security-policy:
+    short: "Get current security policy settings"
+
+  update-security-policy:
+    short: "Update security policy settings"
+
+  # ── 分页默认值 (其余分页命令) ─────────────────────────────────────────────
+  list-open-sources:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-csp-audits:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-kube-audits:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  group-members:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-group-roles:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-group-subjects:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-folder-role-names:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-members-by-platform-role:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-members-folders-by-folder-role:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-members-workspaces-by-workspace-role:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-workspace-role-names:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-user-subjects:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-webhook-endpoint-events:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-webhook-endpoints:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-webhook-records-by-client-id:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-webhooks-by-client-id:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  folder-list-groups:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  folder-list-users:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-available-exclusive-resources-by-workspace:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-available-shared-resources-by-workspace:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-exclusive-resources-by-workspace:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-members-roles-by-folder:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-members-roles-by-workspace:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  list-shared-resources-by-workspace:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }
+
+  move-workspace-folder-list:
+    params:
+      page: { default: "1" }
+      pageSize: { default: "20" }

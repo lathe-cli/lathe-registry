@@ -1,0 +1,11 @@
+cli:
+  name: dc
+  short: "Command-line tool for DaoCloud Enterprise (DCE)"
+
+auth:
+  validate:
+    method: GET
+    path: /apis/ghippo.io/v1alpha1/current-user
+    display:
+      username_field: username
+      fallback_field: email
