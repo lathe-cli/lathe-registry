@@ -23,6 +23,9 @@ const safeMarked = new Marked({
 });
 const readme = safeMarked.parse(recipe.readme_markdown);
 const fileCount = recipe.files.length;
+const sourceCount = recipe.source_refs.length;
+const skillArtifact = recipe.artifacts.find((artifact) => artifact.kind === "skill");
+const buildPath = recipe.build_path || "pending";
 
 function escapeHtml(value: string): string {
   return value.replace(/[&<>"']/g, (char) => {
@@ -45,6 +48,7 @@ function escapeHtml(value: string): string {
       <div class="detail-tags">
         <span>{recipe.category}</span>
         <span>{recipe.auth.type} auth</span>
+        <span>{sourceCount} pinned sources</span>
         <span>{fileCount} files</span>
       </div>
     </div>
@@ -56,6 +60,24 @@ function escapeHtml(value: string): string {
       <div class="detail-command">
         <span>$</span>
         <code>{recipe.cli_name} search "{recipe.smoke.intent}" --json</code>
+      </div>
+    </div>
+    <div class="detail-evidence" aria-label="Recipe evidence">
+      <div>
+        <span>Skill bundle</span>
+        <strong>{skillArtifact ? skillArtifact.path : "pending"}</strong>
+      </div>
+      <div>
+        <span>Build metadata</span>
+        <code>{buildPath}</code>
+      </div>
+      <div>
+        <span>Source refs</span>
+        <strong>{sourceCount} pinned inputs</strong>
+      </div>
+      <div>
+        <span>Smoke intent</span>
+        <code>{recipe.smoke.intent}</code>
       </div>
     </div>
     <div class="workflow-panel">

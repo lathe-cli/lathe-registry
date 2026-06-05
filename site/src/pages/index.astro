@@ -3,13 +3,17 @@ import SiteShell from "../layouts/SiteShell.astro";
 import RecipeCard from "../components/RecipeCard.astro";
 import { sitePath } from "../lib/paths";
 import registry from "../data/registry.json";
+
+const recipeCount = registry.recipes.length;
+const sourceCount = registry.recipes.reduce((total, recipe) => total + recipe.source_refs.length, 0);
+const skillCount = registry.recipes.filter((recipe) => recipe.skill_path).length;
 ---
 
 <SiteShell title="Lathe Registry">
   <section class="registry-intro">
     <div>
-      <h1>CLI Registry</h1>
-      <p>Discover reproducible API CLIs with pinned specs, generated Skills, catalog evidence, and install prompts agents can actually follow.</p>
+      <h1>Lathe Registry</h1>
+      <p>Reproducible Lathe CLI recipes with pinned sources, generated Skill bundles, build metadata, and exact inspection commands.</p>
     </div>
     <div class="registry-intro-actions">
       <div class="command-strip" aria-label="Registry command preview">
@@ -23,6 +27,21 @@ import registry from "../data/registry.json";
     </div>
   </section>
 
+  <section class="registry-summary" aria-label="Registry evidence summary">
+    <div>
+      <span>Recipes</span>
+      <strong>{recipeCount} reproducible recipe live</strong>
+    </div>
+    <div>
+      <span>Pinned sources</span>
+      <strong>{sourceCount} upstream source refs tracked</strong>
+    </div>
+    <div>
+      <span>Skill bundles</span>
+      <strong>{skillCount} generated Skill ready</strong>
+    </div>
+  </section>
+
   <section class="toolbar" aria-label="Registry controls">
     <div class="registry-search">
       <span class="tab active">CLI Registry</span>
@@ -31,18 +50,10 @@ import registry from "../data/registry.json";
         <input type="search" placeholder="Search CLIs, modules, auth..." data-registry-search />
       </label>
     </div>
-    <div class="registry-count" data-registry-count>{registry.recipes.length} recipe live</div>
+    <div class="registry-count" data-registry-count>{recipeCount} recipe live</div>
   </section>
 
-  <section class="registry-table" aria-label="Available CLIs">
-    <div class="registry-table-head" aria-hidden="true">
-      <span>Recipe</span>
-      <span>CLI</span>
-      <span>Type</span>
-      <span>Sources</span>
-      <span>Status</span>
-      <span>Actions</span>
-    </div>
+  <section class="registry-grid" aria-label="Available CLIs">
     {registry.recipes.map((recipe) => <RecipeCard recipe={recipe} />)}
   </section>
 </SiteShell>

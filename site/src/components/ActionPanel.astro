@@ -43,6 +43,22 @@ ${recipe.cli_name} search "${recipe.smoke.intent}" --json`;
     <code>Install recipe "{recipe.name}" and verify {recipe.cli_name} catalog.</code>
   </div>
 
+  <div class="artifact-list">
+    <span class="panel-label">Generated outputs</span>
+    <p>
+      <span>Build metadata</span>
+      <code>{recipe.build_path || "pending"}</code>
+    </p>
+    <p>
+      <span>Skill path</span>
+      <code>{recipe.skill_path || "pending"}</code>
+    </p>
+    <p>
+      <span>CLI artifact</span>
+      <code>{cliArtifact ? cliArtifact.path : "pending"}</code>
+    </p>
+  </div>
+
   <div class="source-list">
     <span class="panel-label">Pinned sources</span>
     {recipe.source_refs.map((source) => (
