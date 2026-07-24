@@ -226,7 +226,7 @@
           "path": "recipes/trieve/cli.yaml",
           "name": "cli.yaml",
           "language": "yaml",
-          "content": "cli:\n  name: trieve\n  short: \"Command-line tool for the Trieve search and RAG API\"\n\nauth:\n  validate:\n    method: GET\n    path: /api/auth/me\n    display:\n      username_field: email\n      fallback_field: name\n"
+          "content": "cli:\n  name: trieve\n  short: \"Command-line tool for the Trieve search and RAG API\"\n\nskill:\n  bundle: true\n\nauth:\n  validate:\n    method: GET\n    path: /api/auth/me\n    display:\n      username_field: email\n      fallback_field: name\n"
         },
         {
           "path": "recipes/trieve/lathe.yaml",

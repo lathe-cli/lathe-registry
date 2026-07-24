@@ -2,6 +2,9 @@ cli:
   name: trieve
   short: "Command-line tool for the Trieve search and RAG API"
 
+skill:
+  bundle: true
+
 auth:
   validate:
     method: GET

@@ -27,6 +27,18 @@ has `auth.required=true`:
 trieve auth status --hostname api.trieve.ai
 ```
 
+## Install the Skill
+
+The recipe enables the bundled Agent Skill (`skill.bundle` in `cli.yaml`), so the
+generated CLI ships a `skill install` command:
+
+```sh
+trieve skill install --scope user --agent codex --yes
+```
+
+It writes the Skill to the agent's skills directory (e.g.
+`~/.agents/skills/trieve/`).
+
 ## Agent workflow
 
 ```sh
