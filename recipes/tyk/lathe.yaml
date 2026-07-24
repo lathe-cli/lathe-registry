@@ -1,0 +1,17 @@
+name: tyk
+display_name: Tyk Gateway
+cli_name: tyk
+category: api-gateway
+homepage: https://github.com/TykTechnologies/tyk
+description: Generated tyk CLI and agent Skill for the Tyk Gateway management API.
+maintainers:
+  - github: samzong
+auth:
+  type: custom
+  notes: >-
+    The Tyk Gateway management API authenticates with a shared secret sent in the
+    X-Tyk-Authorization header (the gateway `secret`). It is a gateway secret,
+    not a per-user token. Run `tyk auth login --hostname <gateway-host>` and
+    verify with `tyk auth status` (validates against GET /hello).
+smoke:
+  intent: list apis

@@ -1,0 +1,14 @@
+cli:
+  name: tyk
+  short: "Command-line tool for the Tyk Gateway management API"
+
+skill:
+  bundle: true
+
+auth:
+  validate:
+    method: GET
+    path: /hello
+    display:
+      username_field: version
+      fallback_field: status
