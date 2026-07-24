@@ -69,7 +69,7 @@
       },
       "recipe_path": "recipes/trieve",
       "readme_path": "recipes/trieve/README.md",
-      "catalog_path": "catalogs/trieve.json",
+      "catalog_path": "",
       "skill_path": "skills/trieve",
       "build_path": "builds/trieve.json",
       "artifacts": [

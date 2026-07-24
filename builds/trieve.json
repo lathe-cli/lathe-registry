@@ -17,7 +17,7 @@
     }
   ],
   "outputs": {
-    "catalog": "catalogs/trieve.json",
+    "catalog": null,
     "skill": "skills/trieve",
     "cli_artifacts": []
   }
