@@ -1,0 +1,11 @@
+sources:
+  trieve:
+    display_name: Trieve API
+    default_hostname: api.trieve.ai
+    repo_url: https://github.com/devflowinc/trieve.git
+    # pinned to main HEAD as of 2026-07-24 (OpenAPI info.version 0.13.0); bump when upgrading
+    pinned_tag: a99b21e23f21025757b44efb594676c4a7b7495f
+    backend: openapi3
+    openapi3:
+      files:
+        - clients/ts-sdk/openapi.json
