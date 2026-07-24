@@ -1,0 +1,4 @@
+interface:
+  display_name: "superset CLI"
+  short_description: "Use the superset generated CLI"
+  default_prompt: "Use $superset to find and run the right superset command."

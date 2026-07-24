@@ -1,0 +1,17 @@
+name: superset
+display_name: Apache Superset
+cli_name: superset
+category: analytics
+homepage: https://github.com/apache/superset
+description: Generated superset CLI and agent Skill for the Apache Superset analytics and BI API.
+maintainers:
+  - github: samzong
+auth:
+  type: bearer
+  notes: >-
+    Requires a Superset JWT access token. Obtain one from
+    POST /api/v1/security/login, then run
+    `superset auth login --hostname <superset-host>` and verify with
+    `superset auth status` (validates against GET /api/v1/me/).
+smoke:
+  intent: list dashboards
