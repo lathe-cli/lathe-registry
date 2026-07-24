@@ -1,0 +1,14 @@
+cli:
+  name: superset
+  short: "Command-line tool for the Apache Superset analytics and BI API"
+
+skill:
+  bundle: true
+
+auth:
+  validate:
+    method: GET
+    path: /api/v1/me/
+    display:
+      username_field: result.username
+      fallback_field: result.email
