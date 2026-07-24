@@ -1,0 +1,10 @@
+sources:
+  tyk:
+    display_name: Tyk Gateway API
+    repo_url: https://github.com/TykTechnologies/tyk.git
+    # pinned to main HEAD as of 2026-07-24 (OpenAPI info.version 5.14.0); bump when upgrading
+    pinned_tag: 3868b50fb579b51f2e751dc9e1a2c8b37329d7a9
+    backend: openapi3
+    openapi3:
+      files:
+        - swagger.yml
