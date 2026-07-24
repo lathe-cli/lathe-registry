@@ -1,0 +1,17 @@
+name: trieve
+display_name: Trieve
+cli_name: trieve
+category: search
+homepage: https://github.com/devflowinc/trieve
+description: Generated trieve CLI and agent Skill for the Trieve search and RAG API.
+maintainers:
+  - github: samzong
+auth:
+  type: custom
+  notes: >-
+    Requires a Trieve API key. The runtime sends it in the Authorization header
+    (Trieve also accepts X-API-KEY). Create a key in the Trieve dashboard, then
+    run `trieve auth login --hostname api.trieve.ai` and verify with
+    `trieve auth status`.
+smoke:
+  intent: search chunks

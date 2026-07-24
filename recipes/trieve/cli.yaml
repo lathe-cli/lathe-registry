@@ -1,0 +1,11 @@
+cli:
+  name: trieve
+  short: "Command-line tool for the Trieve search and RAG API"
+
+auth:
+  validate:
+    method: GET
+    path: /api/auth/me
+    display:
+      username_field: email
+      fallback_field: name
