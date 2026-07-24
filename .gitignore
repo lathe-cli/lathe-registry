@@ -7,3 +7,12 @@ site/dist/
 .dev-server.pid
 .qa/
 .preview/
+
+# CI-regenerated registry outputs (npm run generate rebuilds these on every
+# build; nothing reads the committed copies). Source of truth is recipes/ + the
+# lathe-generated skills/ (which CI cannot regenerate).
+/index.json
+/builds/
+/site/src/data/registry.json
+/site/public/data/registry.json
+/site/public/downloads/
