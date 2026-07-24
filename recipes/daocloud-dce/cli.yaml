@@ -2,6 +2,9 @@ cli:
   name: dc
   short: "Command-line tool for DaoCloud Enterprise (DCE)"
 
+skill:
+  bundle: true
+
 auth:
   validate:
     method: GET
