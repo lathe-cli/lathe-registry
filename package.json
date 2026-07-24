@@ -1,6 +1,7 @@
 {
   "scripts": {
     "generate": "node scripts/generate-site-data.mjs",
+    "preflight": "node scripts/preflight.mjs",
     "build": "npm run generate && npm --prefix site run build",
     "dev": "npm run generate && npm --prefix site run dev -- --port 4321",
     "preview": "npm --prefix site run preview -- --port 4321"

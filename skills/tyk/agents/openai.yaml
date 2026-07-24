@@ -1,4 +1,0 @@
-interface:
-  display_name: "tyk CLI"
-  short_description: "Use the tyk generated CLI"
-  default_prompt: "Use $tyk to find and run the right tyk command."

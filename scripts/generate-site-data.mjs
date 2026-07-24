@@ -93,6 +93,14 @@ function sourceRefsFrom(specs) {
   }));
 }
 
+async function readGateEvidence(recipeName) {
+  try {
+    return JSON.parse(await fs.readFile(path.join(root, ".gate", `${recipeName}.json`), "utf8"));
+  } catch {
+    return null;
+  }
+}
+
 async function buildRecipe(recipeName) {
   const recipePath = path.join(recipesRoot, recipeName);
   const lathePath = path.join(recipePath, "lathe.yaml");
@@ -117,12 +125,24 @@ async function buildRecipe(recipeName) {
   const hasSkill = await exists(skillPath);
   const hasCatalog = await exists(catalogPath);
 
+  // A placeholder version and a 1970 timestamp on a public page are worse than
+  // none; without gate evidence the record says so rather than inventing one.
+  const gateEvidence = await readGateEvidence(lathe.name);
+
   const build = {
     schema_version: 1,
     recipe: lathe.name,
     cli_name: cliName,
-    generated_at: generatedAt,
-    lathe_version: "pending-local-generation",
+    generated_at: gateEvidence?.generated_at ?? generatedAt,
+    lathe_version: gateEvidence?.lathe_version ?? "not-recorded",
+    gate: gateEvidence
+      ? {
+          verdict: gateEvidence.verdict,
+          command_count: gateEvidence.command_count,
+          group_count: gateEvidence.group_count,
+          warnings: gateEvidence.warnings ?? []
+        }
+      : null,
     source_refs: sourceRefs,
     outputs: {
       catalog: hasCatalog ? `catalogs/${lathe.name}.json` : null,

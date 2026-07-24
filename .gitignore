@@ -7,12 +7,16 @@ site/dist/
 .dev-server.pid
 .qa/
 .preview/
+.local/
 
-# CI-regenerated registry outputs (npm run generate rebuilds these on every
-# build; nothing reads the committed copies). Source of truth is recipes/ + the
-# lathe-generated skills/ (which CI cannot regenerate).
+# CI-regenerated registry outputs. `npm run generate` rebuilds the site data and
+# `scripts/gate.mjs --write` regenerates skills/ with a pinned Lathe, so the only
+# source of truth in git is recipes/.
 /index.json
 /builds/
+/skills/
+/.gate/
+/.cache/
 /site/src/data/registry.json
 /site/public/data/registry.json
 /site/public/downloads/
