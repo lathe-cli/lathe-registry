@@ -15,3 +15,4 @@ auth:
     `superset auth status` (validates against GET /api/v1/me/).
 smoke:
   intent: list dashboards
+  expect: get-dashboard

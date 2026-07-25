@@ -15,3 +15,4 @@ auth:
     `trieve auth status`.
 smoke:
   intent: search chunks
+  expect: search-chunks

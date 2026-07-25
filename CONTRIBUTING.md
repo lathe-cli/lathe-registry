@@ -63,6 +63,9 @@ What it cannot judge, a reviewer must — answer these in the PR body:
 - **H3** — Are `category` and `description` written for a human, or copied from
   the spec's `info.title`?
 
+Declare `smoke.expect` in `lathe.yaml` — the command name the smoke intent should
+surface. Without it the gate can only prove the search returned something.
+
 Plus the basics the gate does not cover:
 
 - `README.md` explains usage and auth.
