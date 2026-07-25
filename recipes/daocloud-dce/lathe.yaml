@@ -11,3 +11,5 @@ auth:
   notes: Requires a reachable DCE instance and token-based login.
 smoke:
   intent: list clusters
+  # operationId, not the leaf name: insight defines a list-clusters too
+  expect: Cluster_ListClusters

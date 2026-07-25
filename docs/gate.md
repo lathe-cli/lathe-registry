@@ -49,7 +49,7 @@ none at all, and Lathe then synthesizes names from method+path:
 | G3 | Spec is the product API | spec path contains no `test/ tests/ fixtures/ samples/ examples/ integration/ third_party/ vendor/` segment. This one rule rejects metersphere (553 "commands" from `src/test/resources/`), bruno, nestjs, and actix/examples |
 | G5 | Go-safe source name | matches `^[a-z][a-z0-9_]*$` — the source name becomes a Go package name, so `mall-admin` breaks codegen |
 | G6 | Command floor | ≥ 20 generated commands, measured by really running `commands --json` — never from a static estimate |
-| G7 | Smoke intent resolves | `search "<smoke.intent>"` returns hits; with `smoke.expect` declared, the expected operation must rank in the top 5 |
+| G7 | Smoke intent resolves | `smoke.expect` must rank in the top 5 for `search "<smoke.intent>"`. Without `expect` the rule can only prove the search returned something, so it warns instead |
 | G8 | Agent surface | `skill install --dry-run` works (`skill: { bundle: true }`), and the recipe declares `auth.validate` or states `auth.type: none`. `auth --help` alone proves nothing — Lathe mounts `auth` unconditionally |
 
 G6–G8 require really generating and running the CLI, with the recipe's overlays

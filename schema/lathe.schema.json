@@ -86,6 +86,11 @@
         "intent": {
           "type": "string",
           "minLength": 1
+        },
+        "expect": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Command name or operationId the smoke intent must surface in the top 5 results."
         }
       },
       "additionalProperties": false
