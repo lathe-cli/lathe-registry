@@ -31,6 +31,12 @@ concurrency:
   group: pages-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  # Pinned to a release, not a moving ref: the gate's verdict is only meaningful
+  # against a known Lathe, and it is recorded as build provenance.
+  LATHE_REF: v0.5.1
+  LATHE_SPECS_CACHE: ${{ github.workspace }}/.cache
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -40,8 +46,30 @@ jobs:
         with:
           node-version: 22
           cache: npm
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.25"
+      - name: Install lathe
+        run: |
+          go install github.com/lathe-cli/lathe/cmd/lathe@${LATHE_REF}
+          lathe version
+
+      # Pinned specs are immutable, so this hits on every run that does not change
+      # a pinned_tag; without it each build re-clones every upstream repo.
+      - uses: actions/cache@v4
+        with:
+          path: ${{ env.LATHE_SPECS_CACHE }}
+          key: specs-${{ hashFiles('recipes/**/specs/sources.yaml') }}
+          restore-keys: specs-
+
       - run: npm ci
       - run: npm --prefix site ci
+
+      # Generates every recipe with a real Lathe, runs the admission rules
+      # against the built CLI, and refreshes skills/ — the one artifact the site
+      # build cannot reproduce on its own. Blocking rules fail the build.
+      - run: node scripts/gate.mjs --write
+
       - run: npm run build
       - uses: actions/configure-pages@v5
         if: github.event_name == 'push'

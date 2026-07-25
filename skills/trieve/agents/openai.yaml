@@ -1,4 +1,0 @@
-interface:
-  display_name: "trieve CLI"
-  short_description: "Use the trieve generated CLI"
-  default_prompt: "Use $trieve to find and run the right trieve command."
