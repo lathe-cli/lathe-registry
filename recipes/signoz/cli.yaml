@@ -1,0 +1,14 @@
+cli:
+  name: signoz
+  short: "Command-line tool for the SigNoz observability platform"
+
+skill:
+  bundle: true
+
+auth:
+  validate:
+    method: GET
+    path: /api/v2/dashboards
+    display:
+      username_field: status
+      fallback_field: status

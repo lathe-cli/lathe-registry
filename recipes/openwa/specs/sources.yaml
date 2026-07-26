@@ -1,0 +1,10 @@
+sources:
+  openwa_api:
+    default_hostname: localhost:2785
+    repo_url: https://github.com/rmyndharis/OpenWA
+    # pinned to release v0.10.10 as of 2026-07-26; bump when upgrading
+    pinned_tag: v0.10.10
+    backend: openapi3
+    openapi3:
+      files:
+        - openapi.json

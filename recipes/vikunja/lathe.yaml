@@ -1,0 +1,17 @@
+name: vikunja
+display_name: Vikunja
+cli_name: vikunja
+category: project-management
+homepage: https://github.com/go-vikunja/vikunja
+description: Generated Vikunja CLI and agent Skill for tasks, projects, teams, and users.
+maintainers:
+  - github: samzong
+auth:
+  type: bearer
+  notes: >-
+    Requires a Vikunja API token in the Authorization header. Run
+    `vikunja auth login --hostname <host>` and verify it with
+    `vikunja auth status --hostname <host>`.
+smoke:
+  intent: get user information
+  expect: get-user

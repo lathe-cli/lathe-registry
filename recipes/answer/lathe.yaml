@@ -1,0 +1,17 @@
+name: answer
+display_name: Apache Answer
+cli_name: answer
+category: knowledge-base
+homepage: https://github.com/apache/answer
+description: Generated Apache Answer CLI and agent Skill for questions, answers, users, and moderation.
+maintainers:
+  - github: samzong
+auth:
+  type: bearer
+  notes: >-
+    Requires an Apache Answer access token or API key in the Authorization
+    header. Run `answer auth login --hostname <host>` and verify it with
+    `answer auth status --hostname <host>`.
+smoke:
+  intent: list questions
+  expect: get-personal-question-page

@@ -1,0 +1,17 @@
+name: openwa
+display_name: OpenWA
+cli_name: openwa
+category: messaging
+homepage: https://github.com/rmyndharis/OpenWA
+description: Generated OpenWA CLI and agent Skill for WhatsApp sessions, messages, groups, and webhooks.
+maintainers:
+  - github: samzong
+auth:
+  type: custom
+  notes: >-
+    Requires an OpenWA administrator API key in the X-API-Key header. Run
+    `openwa auth login --hostname <host> --auth-type apikey` and verify it
+    with `openwa auth status --hostname <host>`.
+smoke:
+  intent: send message
+  expect: message-controller-send-audio

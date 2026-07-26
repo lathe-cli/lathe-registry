@@ -1,0 +1,14 @@
+cli:
+  name: owncast
+  short: "Command-line tool for Owncast live streams"
+
+skill:
+  bundle: true
+
+auth:
+  validate:
+    method: GET
+    path: /api/admin/status
+    display:
+      username_field: versionNumber
+      fallback_field: streamTitle

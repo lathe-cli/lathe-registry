@@ -1,0 +1,17 @@
+name: kavita
+display_name: Kavita
+cli_name: kavita
+category: media-library
+homepage: https://github.com/Kareadita/Kavita
+description: Generated Kavita CLI and agent Skill for self-hosted reading libraries and users.
+maintainers:
+  - github: samzong
+auth:
+  type: custom
+  notes: >-
+    Requires a Kavita authentication key in the x-api-key header. Run
+    `kavita auth login --hostname <host> --auth-type apikey` and verify it
+    with `kavita auth status --hostname <host>`.
+smoke:
+  intent: get user libraries
+  expect: get-api-library-user-libraries

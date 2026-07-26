@@ -1,0 +1,17 @@
+name: coolify
+display_name: Coolify
+cli_name: coolify
+category: cloud-platform
+homepage: https://github.com/coollabsio/coolify
+description: Generated Coolify CLI and agent Skill for applications, servers, deployments, and teams.
+maintainers:
+  - github: samzong
+auth:
+  type: bearer
+  notes: >-
+    Requires a Coolify API token in the Authorization header. Run
+    `coolify auth login --hostname <host>` and verify it with
+    `coolify auth status --hostname <host>`.
+smoke:
+  intent: list applications
+  expect: list-applications

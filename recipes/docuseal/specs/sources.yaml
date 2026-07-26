@@ -1,0 +1,10 @@
+sources:
+  docuseal_api:
+    default_hostname: api.docuseal.com
+    repo_url: https://github.com/docusealco/docuseal
+    # pinned to release 3.1.5 as of 2026-07-26; bump when upgrading
+    pinned_tag: 3.1.5
+    backend: openapi3
+    openapi3:
+      files:
+        - docs/openapi.json

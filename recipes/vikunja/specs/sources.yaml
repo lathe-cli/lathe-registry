@@ -1,0 +1,10 @@
+sources:
+  vikunja_api:
+    default_hostname: localhost:3456
+    repo_url: https://github.com/go-vikunja/vikunja
+    # pinned to main HEAD as of 2026-07-26; bump when upgrading
+    pinned_tag: c0f026ff47295951ce63498e6e42542f1a1ecd34
+    backend: swagger
+    swagger:
+      files:
+        - pkg/swagger/swagger.json

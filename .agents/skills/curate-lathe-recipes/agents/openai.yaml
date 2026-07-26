@@ -1,0 +1,4 @@
+interface:
+  display_name: "Curate Lathe Recipes"
+  short_description: "Curate recipes and expose Lathe capability gaps"
+  default_prompt: "Use $curate-lathe-recipes to test GitHub projects, admit a reproducible recipe when justified, and write a Lathe and lathe-scan capability review."

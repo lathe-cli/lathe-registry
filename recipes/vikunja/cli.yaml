@@ -1,0 +1,14 @@
+cli:
+  name: vikunja
+  short: "Command-line tool for Vikunja project management"
+
+skill:
+  bundle: true
+
+auth:
+  validate:
+    method: GET
+    path: /api/v1/user
+    display:
+      username_field: username
+      fallback_field: email

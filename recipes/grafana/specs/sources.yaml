@@ -1,0 +1,10 @@
+sources:
+  grafana_http_api:
+    default_hostname: localhost:3000
+    repo_url: https://github.com/grafana/grafana
+    # pinned to main HEAD as of 2026-07-26; bump when upgrading
+    pinned_tag: d18e58d33aa8741f08fbab4aa73bdaf1f04e3be5
+    backend: openapi3
+    openapi3:
+      files:
+        - packages/grafana-openapi/src/api/openapi3.json

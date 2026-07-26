@@ -1,0 +1,10 @@
+sources:
+  kavita:
+    default_hostname: localhost:5000
+    repo_url: https://github.com/Kareadita/Kavita
+    # pinned to develop HEAD as of 2026-07-26; bump when upgrading
+    pinned_tag: e9192acc73aead074d75447470dfe8debe7b848c
+    backend: openapi3
+    openapi3:
+      files:
+        - openapi.json

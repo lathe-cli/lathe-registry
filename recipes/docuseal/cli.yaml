@@ -1,0 +1,11 @@
+cli:
+  name: docuseal
+  short: "Command-line tool for DocuSeal document workflows"
+
+skill:
+  bundle: true
+
+auth:
+  validate:
+    method: GET
+    path: /templates
