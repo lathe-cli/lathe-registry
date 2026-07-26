@@ -44,6 +44,20 @@ export function run(command, args, options = {}) {
   });
 }
 
+function runtimeProbeFailure(stage, result, detail) {
+  const lines = (detail ?? (result.stderr.trim() || result.stdout.trim())).split("\n");
+  const output =
+    lines.length <= 8
+      ? lines.join("\n")
+      : [...lines.slice(0, 4), `... ${lines.length - 8} line(s) omitted ...`, ...lines.slice(-4)].join("\n");
+  return {
+    kind: "runtime",
+    stage,
+    exitCode: result.code,
+    message: `${stage} exited ${result.code}${output ? `:\n${output}` : ""}`
+  };
+}
+
 // Scanned directly rather than shelling out: `command` is a shell builtin with
 // no binary on most Linux distributions, so spawning it works on macOS and
 // fails everywhere else.
@@ -171,7 +185,17 @@ export async function generateAndProbe({ latheBin, cliName, cliYaml, sourcesYaml
   const probe = { generated: true, failure: null, projectDir, cliBin, skillDir: path.join(projectDir, "skills", cliName) };
 
   const catalogRun = await run(cliBin, ["commands", "--json"]);
-  const catalog = catalogRun.code === 0 ? JSON.parse(catalogRun.stdout) : { commands: [] };
+  if (catalogRun.code !== 0) {
+    probe.failure = runtimeProbeFailure("commands --json", catalogRun);
+    return probe;
+  }
+  let catalog;
+  try {
+    catalog = JSON.parse(catalogRun.stdout);
+  } catch (error) {
+    probe.failure = runtimeProbeFailure("commands --json", catalogRun, `invalid JSON: ${error.message}`);
+    return probe;
+  }
   const operations = (catalog.commands ?? []).filter((command) => command.kind === "operation");
   const synthesized = operations.filter(isSynthesizedName);
 
@@ -186,7 +210,17 @@ export async function generateAndProbe({ latheBin, cliName, cliYaml, sourcesYaml
 
   if (intent) {
     const searchRun = await run(cliBin, ["search", intent, "--json"]);
-    const hits = searchRun.code === 0 ? JSON.parse(searchRun.stdout) : [];
+    if (searchRun.code !== 0) {
+      probe.failure = runtimeProbeFailure("search --json", searchRun);
+      return probe;
+    }
+    let hits;
+    try {
+      hits = JSON.parse(searchRun.stdout);
+    } catch (error) {
+      probe.failure = runtimeProbeFailure("search --json", searchRun, `invalid JSON: ${error.message}`);
+      return probe;
+    }
     probe.searchTop = (Array.isArray(hits) ? hits : []).slice(0, 5).map((hit) => ({
       score: hit.score,
       use: hit.command?.use,
@@ -202,7 +236,11 @@ export async function generateAndProbe({ latheBin, cliName, cliYaml, sourcesYaml
   const skill = await run(cliBin, ["skill", "install", "--scope", "user", "--agent", "codex", "--dry-run", "--yes"]);
   probe.skillInstallOk = skill.code === 0;
   const auth = await run(cliBin, ["auth", "--help"]);
-  probe.authHelpOk = auth.code === 0;
+  if (auth.code !== 0) {
+    probe.failure = runtimeProbeFailure("auth --help", auth);
+    return probe;
+  }
+  probe.authHelpOk = true;
 
   return probe;
 }

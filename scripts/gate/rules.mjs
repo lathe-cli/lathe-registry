@@ -162,9 +162,16 @@ function g5GoSafeName(input) {
   return result("G5", "Go-safe source name", "pass", "all source names are Go identifiers");
 }
 
+function unavailableProbe(probe) {
+  if (!probe?.generated) return "generation did not run";
+  if (probe.failure) return `${probe.failure.kind} probe failed at ${probe.failure.stage ?? "unknown stage"}`;
+  return null;
+}
+
 function g6CommandFloor(input) {
   const { probe } = input;
-  if (!probe?.generated) return result("G6", `>= ${COMMAND_FLOOR} commands`, "skip", "generation did not run");
+  const unavailable = unavailableProbe(probe);
+  if (unavailable) return result("G6", `>= ${COMMAND_FLOOR} commands`, "skip", unavailable);
   const count = probe.commandCount ?? 0;
   if (count < COMMAND_FLOOR) {
     return result(
@@ -180,7 +187,8 @@ function g6CommandFloor(input) {
 
 function g7SmokeSearch(input) {
   const { probe } = input;
-  if (!probe?.generated) return result("G7", "smoke intent resolves", "skip", "generation did not run");
+  const unavailable = unavailableProbe(probe);
+  if (unavailable) return result("G7", "smoke intent resolves", "skip", unavailable);
   const intent = input.meta?.smoke?.intent ?? input.intent;
   if (!intent) {
     return result("G7", "smoke intent resolves", "skip", "no smoke intent supplied (pass --intent to check)");
@@ -214,11 +222,13 @@ function g7SmokeSearch(input) {
 
 function g8AgentSurface(input) {
   const { probe } = input;
-  if (!probe?.generated) return result("G8", "agent surface", "skip", "generation did not run");
+  const unavailable = unavailableProbe(probe);
+  if (unavailable) return result("G8", "agent surface", "skip", unavailable);
 
   const problems = [];
   if (!probe.skillInstallOk) problems.push('`skill install --dry-run` failed — set "skill: { bundle: true }" in cli.yaml');
   if (!probe.authHelpOk) problems.push("`auth --help` failed");
+  if (problems.length > 0) return result("G8", "agent surface", "fail", problems.join("; "));
 
   // Lathe mounts `auth` unconditionally, so its presence proves nothing; the
   // recipe must say how to prove a token, or that none is needed.
@@ -228,11 +238,10 @@ function g8AgentSurface(input) {
     const detail =
       "cli.yaml declares no auth.validate and lathe.yaml does not say auth.type: none — " +
       "an agent cannot tell whether its token works";
-    if (input.mode === "gate") problems.push(detail);
-    else return result("G8", "agent surface", "warn", `${detail} (expected at preflight: see H2)`);
+    if (input.mode === "gate") return result("G8", "agent surface", "fail", detail);
+    return result("G8", "agent surface", "warn", `${detail} (expected at preflight: see H2)`);
   }
 
-  if (problems.length > 0) return result("G8", "agent surface", "fail", problems.join("; "));
   return result("G8", "agent surface", "pass", hasValidate ? "skill install + auth.validate declared" : "skill install; auth.type: none");
 }
 
@@ -240,7 +249,8 @@ function g8AgentSurface(input) {
 // so an unnamed spec no longer means an unusable CLI. Reports, does not block.
 function g9NameQuality(input) {
   const { probe } = input;
-  if (!probe?.generated) return result("G9", "derived command names", "skip", "generation did not run");
+  const unavailable = unavailableProbe(probe);
+  if (unavailable) return result("G9", "derived command names", "skip", unavailable);
   const total = probe.commandCount ?? 0;
   if (total === 0) return result("G9", "derived command names", "skip", "no commands");
   const synth = probe.synthesizedCount ?? 0;

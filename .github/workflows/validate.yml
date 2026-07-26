@@ -64,6 +64,7 @@ jobs:
 
       - run: npm ci
       - run: npm --prefix site ci
+      - run: npm test
 
       # Generates every recipe with a real Lathe, runs the admission rules
       # against the built CLI, and refreshes skills/ — the one artifact the site

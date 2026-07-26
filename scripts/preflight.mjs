@@ -157,7 +157,7 @@ function printReport(report) {
   const { subject, verdict, evaluation, probe, toolchain } = report;
   console.log(`\npreflight: ${subject}`);
   console.log(`toolchain: lathe ${toolchain.latheVersion} (${toolchain.latheFingerprint})`);
-  if (probe?.generated) {
+  if (probe?.generated && !probe.failure) {
     console.log(
       `generated : ${probe.commandCount} commands in ${probe.groups} groups, ` +
         `${probe.synthesizedCount} synthesized names`
@@ -311,13 +311,13 @@ async function main() {
         detail: `${input.probe.failure.kind}: ${input.probe.failure.message}`
       });
       evaluation.rules.unshift(evaluation.blocking.at(-1));
-      evaluation.verdict = "NO-GO";
+      evaluation.verdict = input.probe.failure.kind === "runtime" ? "TOOLCHAIN-ERROR" : "NO-GO";
     }
 
     const report = { subject, verdict: evaluation.verdict, evaluation, probe: input.probe, toolchain, emitted };
     if (options.json) console.log(JSON.stringify(report, null, 2));
     else printReport(report);
-    process.exitCode = evaluation.verdict === "GO" ? 0 : 1;
+    process.exitCode = evaluation.verdict === "GO" ? 0 : evaluation.verdict === "TOOLCHAIN-ERROR" ? 3 : 1;
   } catch (error) {
     if (error instanceof ToolchainError) {
       console.error(`\ntoolchain error: ${error.message}`);
