@@ -104,6 +104,9 @@ async function main() {
         overlayDir: recipe.overlayDir,
         workdir
       });
+      if (probe.failure?.kind === "runtime") {
+        throw new ToolchainError(probe.failure.message);
+      }
 
       const evaluation = evaluate({
         mode: "gate",
