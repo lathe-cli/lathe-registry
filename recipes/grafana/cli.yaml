@@ -1,0 +1,14 @@
+cli:
+  name: grafana
+  short: "Command-line tool for Grafana observability"
+
+skill:
+  bundle: true
+
+auth:
+  validate:
+    method: GET
+    path: /api/user
+    display:
+      username_field: login
+      fallback_field: email

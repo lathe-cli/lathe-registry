@@ -1,0 +1,14 @@
+cli:
+  name: kavita
+  short: "Command-line tool for Kavita reading libraries"
+
+skill:
+  bundle: true
+
+auth:
+  validate:
+    method: GET
+    path: /api/Account
+    display:
+      username_field: username
+      fallback_field: email

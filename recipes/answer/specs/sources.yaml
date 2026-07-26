@@ -1,0 +1,10 @@
+sources:
+  apache_answer:
+    default_hostname: localhost:9080
+    repo_url: https://github.com/apache/answer
+    # pinned to release v2.0.2 as of 2026-07-26; bump when upgrading
+    pinned_tag: v2.0.2
+    backend: swagger
+    swagger:
+      files:
+        - docs/swagger.json

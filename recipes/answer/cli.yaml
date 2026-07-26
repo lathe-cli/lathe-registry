@@ -1,0 +1,11 @@
+cli:
+  name: answer
+  short: "Command-line tool for Apache Answer communities"
+
+skill:
+  bundle: true
+
+auth:
+  validate:
+    method: GET
+    path: /answer/api/v1/notification/status

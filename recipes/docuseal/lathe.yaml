@@ -1,0 +1,17 @@
+name: docuseal
+display_name: DocuSeal
+cli_name: docuseal
+category: document-automation
+homepage: https://github.com/docusealco/docuseal
+description: Generated DocuSeal CLI and agent Skill for document templates and signing workflows.
+maintainers:
+  - github: samzong
+auth:
+  type: custom
+  notes: >-
+    Requires an API key in the X-Auth-Token header. Run
+    `docuseal auth login --hostname api.docuseal.com --auth-type apikey`,
+    enter X-Auth-Token as the header, then verify with `docuseal auth status`.
+smoke:
+  intent: list templates
+  expect: get-templates

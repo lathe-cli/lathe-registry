@@ -1,0 +1,17 @@
+name: pentagi
+display_name: PentAGI
+cli_name: pentagi
+category: security
+homepage: https://github.com/vxcontrol/pentagi
+description: Generated PentAGI CLI and agent Skill for autonomous penetration-testing operations.
+maintainers:
+  - github: samzong
+auth:
+  type: bearer
+  notes: >-
+    Requires a PentAGI access token in the Authorization header. Run
+    `pentagi auth login --hostname <host>` and verify it with
+    `pentagi auth status --hostname <host>`.
+smoke:
+  intent: list flow tasks
+  expect: get-flows-flow-id-tasks

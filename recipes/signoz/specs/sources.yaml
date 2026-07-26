@@ -1,0 +1,10 @@
+sources:
+  signoz:
+    default_hostname: localhost:8080
+    repo_url: https://github.com/SigNoz/signoz
+    # pinned to main HEAD as of 2026-07-26; bump when upgrading
+    pinned_tag: e728942fec39378a2afcec67af7b92124ba24c2d
+    backend: openapi3
+    openapi3:
+      files:
+        - docs/api/openapi.yml

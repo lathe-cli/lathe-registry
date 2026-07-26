@@ -1,0 +1,9 @@
+sources:
+  pentagi_api:
+    repo_url: https://github.com/vxcontrol/pentagi
+    # pinned to master HEAD as of 2026-07-26; bump when upgrading
+    pinned_tag: 879e87c2c2688c4a95eac9c1aaf3cd6f6123ebe3
+    backend: swagger
+    swagger:
+      files:
+        - backend/pkg/server/docs/swagger.json

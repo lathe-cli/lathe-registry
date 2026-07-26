@@ -1,0 +1,17 @@
+name: owncast
+display_name: Owncast
+cli_name: owncast
+category: streaming
+homepage: https://github.com/owncast/owncast
+description: Generated Owncast CLI and agent Skill for live-stream administration and integrations.
+maintainers:
+  - github: samzong
+auth:
+  type: custom
+  notes: >-
+    Owncast admin endpoints use HTTP Basic authentication. Run
+    `owncast auth login --hostname <host> --auth-type basic` with the admin
+    username and stream key, then verify with `owncast auth status`.
+smoke:
+  intent: list webhooks
+  expect: get-webhooks

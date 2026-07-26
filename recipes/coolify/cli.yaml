@@ -1,0 +1,14 @@
+cli:
+  name: coolify
+  short: "Command-line tool for the Coolify deployment platform"
+
+skill:
+  bundle: true
+
+auth:
+  validate:
+    method: GET
+    path: /api/v1/teams/current
+    display:
+      username_field: name
+      fallback_field: description

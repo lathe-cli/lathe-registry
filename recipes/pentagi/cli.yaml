@@ -1,0 +1,14 @@
+cli:
+  name: pentagi
+  short: "Command-line tool for the PentAGI security platform"
+
+skill:
+  bundle: true
+
+auth:
+  validate:
+    method: GET
+    path: /api/v1/info
+    display:
+      username_field: data.user.name
+      fallback_field: data.user.mail

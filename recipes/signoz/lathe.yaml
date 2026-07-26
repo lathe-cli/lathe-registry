@@ -1,0 +1,17 @@
+name: signoz
+display_name: SigNoz
+cli_name: signoz
+category: observability
+homepage: https://github.com/SigNoz/signoz
+description: Generated SigNoz CLI and agent Skill for dashboards, alerts, traces, logs, and metrics.
+maintainers:
+  - github: samzong
+auth:
+  type: custom
+  notes: >-
+    Requires a SigNoz API key in the SigNoz-Api-Key header. Run
+    `signoz auth login --hostname <host> --auth-type apikey`, enter that header
+    name, then verify with `signoz auth status`.
+smoke:
+  intent: list dashboards
+  expect: list-dashboards-for-user-v2

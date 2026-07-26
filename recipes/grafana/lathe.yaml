@@ -1,0 +1,17 @@
+name: grafana
+display_name: Grafana
+cli_name: grafana
+category: observability
+homepage: https://github.com/grafana/grafana
+description: Generated Grafana CLI and agent Skill for dashboards, data sources, alerts, and administration.
+maintainers:
+  - github: samzong
+auth:
+  type: bearer
+  notes: >-
+    Requires a Grafana service-account token in the Authorization header. Run
+    `grafana auth login --hostname <host>` and verify it with
+    `grafana auth status --hostname <host>`.
+smoke:
+  intent: list public dashboards
+  expect: list-public-dashboards

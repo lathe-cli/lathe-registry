@@ -1,0 +1,14 @@
+cli:
+  name: openwa
+  short: "Command-line tool for OpenWA WhatsApp automation"
+
+skill:
+  bundle: true
+
+auth:
+  validate:
+    method: GET
+    path: /api/settings
+    display:
+      username_field: general.apiBaseUrl
+      fallback_field: notifications.notificationEmail
