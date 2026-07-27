@@ -34,7 +34,7 @@ concurrency:
 env:
   # Pinned to a release, not a moving ref: the gate's verdict is only meaningful
   # against a known Lathe, and it is recorded as build provenance.
-  LATHE_REF: v0.5.1
+  LATHE_REF: v0.5.2
   LATHE_SPECS_CACHE: ${{ github.workspace }}/.cache
 
 jobs:
