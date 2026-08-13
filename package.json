@@ -1,4 +1,5 @@
 {
+  "license": "Apache-2.0",
   "scripts": {
     "test": "node --test scripts/gate/*.test.mjs",
     "generate": "node scripts/generate-site-data.mjs",

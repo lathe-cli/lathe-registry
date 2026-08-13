@@ -36,3 +36,7 @@ Recipe inputs live under `recipes/<name>/`.
 Generated outputs such as catalog snapshots, Skill bundles, build metadata, and
 site data are evidence and distribution material. They must be reproducible from
 the recipe.
+
+## License
+
+[Apache License 2.0](LICENSE) © lathe-cli
