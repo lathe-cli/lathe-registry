@@ -5,12 +5,13 @@ import fg from "fast-glob";
 import yaml from "js-yaml";
 import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
-import * as tar from "tar";
 
 const root = process.cwd();
 const recipesRoot = path.join(root, "recipes");
 const siteDataPath = path.join(root, "site", "src", "data", "registry.json");
 const publicDataPath = path.join(root, "site", "public", "data", "registry.json");
+const publicIndexPath = path.join(root, "site", "public", "index.json");
+const publicSchemaPath = path.join(root, "site", "public", "schema", "index.schema.json");
 const downloadsRoot = path.join(root, "site", "public", "downloads");
 const latheSchema = JSON.parse(await fs.readFile(path.join(root, "schema", "lathe.schema.json"), "utf8"));
 const indexSchema = JSON.parse(await fs.readFile(path.join(root, "schema", "index.schema.json"), "utf8"));
@@ -120,14 +121,15 @@ async function buildRecipe(recipeName) {
   const buildPath = path.join(root, "builds", `${lathe.name}.json`);
   const catalogPath = path.join(root, "catalogs", `${lathe.name}.json`);
   const skillPath = path.join(root, "skills", cliName);
-  const skillArchiveName = `${lathe.name}-skill.tar.gz`;
-  const skillArchivePath = path.join(downloadsRoot, skillArchiveName);
   const hasSkill = await exists(skillPath);
   const hasCatalog = await exists(catalogPath);
+  await fs.rm(path.join(downloadsRoot, `${lathe.name}-skill.tar.gz`), { force: true });
+  await fs.rm(path.join(downloadsRoot, `${cliName}-${process.platform}-${process.arch}`), { force: true });
 
   // A placeholder version and a 1970 timestamp on a public page are worse than
   // none; without gate evidence the record says so rather than inventing one.
   const gateEvidence = await readGateEvidence(lathe.name);
+  const cliArtifacts = gateEvidence?.cli_artifacts ?? [];
 
   const build = {
     schema_version: 1,
@@ -138,8 +140,11 @@ async function buildRecipe(recipeName) {
     gate: gateEvidence
       ? {
           verdict: gateEvidence.verdict,
+          generated_at: gateEvidence.generated_at,
+          lathe_version: gateEvidence.lathe_version,
           command_count: gateEvidence.command_count,
           group_count: gateEvidence.group_count,
+          skill_included: gateEvidence.skill_included,
           warnings: gateEvidence.warnings ?? []
         }
       : null,
@@ -147,25 +152,12 @@ async function buildRecipe(recipeName) {
     outputs: {
       catalog: hasCatalog ? `catalogs/${lathe.name}.json` : null,
       skill: hasSkill ? `skills/${cliName}` : null,
-      cli_artifacts: []
+      cli_artifacts: cliArtifacts
     }
   };
 
   await fs.mkdir(path.dirname(buildPath), { recursive: true });
   await fs.writeFile(buildPath, `${JSON.stringify(build, null, 2)}\n`);
-
-  if (hasSkill) {
-    await tar.c(
-      {
-        gzip: true,
-        file: skillArchivePath,
-        cwd: path.join(root, "skills"),
-        portable: true,
-        mtime: generatedDate
-      },
-      [cliName]
-    );
-  }
 
   const filePatterns = [
     `recipes/${recipeName}/**/*`,
@@ -193,16 +185,16 @@ async function buildRecipe(recipeName) {
     catalog_path: hasCatalog ? `catalogs/${lathe.name}.json` : "",
     skill_path: hasSkill ? `skills/${cliName}` : "",
     build_path: `builds/${lathe.name}.json`,
+    generated_at: build.generated_at,
+    lathe_version: build.lathe_version,
+    gate: build.gate,
+    outputs: build.outputs,
     source_refs: sourceRefs,
-    artifacts: hasSkill
-      ? [
-          {
-            kind: "skill",
-            label: "Download Skill",
-            path: `downloads/${skillArchiveName}`
-          }
-        ]
-      : [],
+    artifacts: cliArtifacts.map((artifact) => ({
+      kind: "cli",
+      label: "Download CLI",
+      ...artifact
+    })),
     readme_markdown: readmeMarkdown,
     files
   };
@@ -214,9 +206,14 @@ const recipeDirs = (await fs.readdir(recipesRoot, { withFileTypes: true }))
   .sort();
 
 const recipes = await Promise.all(recipeDirs.map(buildRecipe));
+const indexGeneratedAt = recipes
+  .map((recipe) => recipe.generated_at)
+  .sort()
+  .at(-1) ?? generatedAt;
 const index = {
+  $schema: "https://lathe-cli.github.io/lathe-registry/schema/index.schema.json",
   schema_version: 1,
-  generated_at: generatedAt,
+  generated_at: indexGeneratedAt,
   recipes: recipes.map((recipe) => ({
     name: recipe.name,
     display_name: recipe.display_name,
@@ -224,12 +221,16 @@ const index = {
     category: recipe.category,
     description: recipe.description,
     auth: recipe.auth,
-    recipe_path: recipe.recipe_path,
-    readme_path: recipe.readme_path,
-    catalog_path: recipe.catalog_path,
-    skill_path: recipe.skill_path,
-    build_path: recipe.build_path,
-    artifacts: recipe.artifacts,
+    gate: recipe.gate,
+    artifacts: recipe.artifacts.map((artifact) => ({
+      os: artifact.os,
+      arch: artifact.arch,
+      format: artifact.format,
+      binary: artifact.binary,
+      url: artifact.path,
+      size: artifact.size,
+      sha256: artifact.sha256
+    })),
     source_refs: recipe.source_refs
   }))
 };
@@ -245,7 +246,10 @@ const siteData = {
 
 await fs.mkdir(path.dirname(siteDataPath), { recursive: true });
 await fs.mkdir(path.dirname(publicDataPath), { recursive: true });
+await fs.mkdir(path.dirname(publicSchemaPath), { recursive: true });
 await fs.writeFile(path.join(root, "index.json"), `${JSON.stringify(index, null, 2)}\n`);
+await fs.writeFile(publicIndexPath, `${JSON.stringify(index, null, 2)}\n`);
+await fs.copyFile(path.join(root, "schema", "index.schema.json"), publicSchemaPath);
 await fs.writeFile(siteDataPath, `${JSON.stringify(siteData, null, 2)}\n`);
 await fs.writeFile(publicDataPath, `${JSON.stringify(siteData, null, 2)}\n`);
 console.log(`generated ${recipes.length} recipe page${recipes.length === 1 ? "" : "s"}`);

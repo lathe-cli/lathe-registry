@@ -18,5 +18,7 @@ site/dist/
 /.gate/
 /.cache/
 /site/src/data/registry.json
+/site/public/index.json
+/site/public/schema/
 /site/public/data/registry.json
 /site/public/downloads/

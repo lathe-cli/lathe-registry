@@ -312,9 +312,9 @@ components:
 
 ## Overview
 
-Lathe Registry is a recipe registry and evidence workbench for reproducible Lathe CLI generation. It is not a binary marketplace and not a general SaaS marketing site. The design should help engineers and agents answer three questions quickly: what recipe exists, what inputs prove it is reproducible, and what exact install or inspection step should run next.
+Lathe Registry is a recipe registry, multi-platform CLI download surface, and evidence workbench for reproducible Lathe CLI generation. It is not a general SaaS marketing site. The design should help engineers and agents answer three questions quickly: what CLI exists, how to download or build it for the required platform, and what inputs prove it is reproducible.
 
-The visual foundation is adapted from Linear.app's restrained dark software-craft language: near-black canvas, charcoal surface ladder, precise hairline borders, compact rounded rectangles, tight sans typography, and product surfaces that carry the proof instead of decorative illustration. Lathe Registry changes the accent from Linear lavender to Lathe green and changes the protagonist from product screenshots to registry evidence: recipe rows, pinned source hashes, generated catalogs, Skill bundles, build metadata, command snippets, and file explorers.
+The visual foundation is adapted from Linear.app's restrained dark software-craft language: near-black canvas, charcoal surface ladder, precise hairline borders, compact rounded rectangles, tight sans typography, and product surfaces that carry the proof instead of decorative illustration. Lathe Registry changes the accent from Linear lavender to Lathe green and changes the protagonist from product screenshots to registry evidence: downloadable CLI binaries, recipe rows, pinned source hashes, generated catalogs, embedded Skills, build metadata, command snippets, and file explorers.
 
 The interface should feel like a package registry crossed with a build provenance viewer. It is quiet, technical, and dense. The page should make reviewable state visible before persuasion: source refs, auth shape, smoke intent, generated outputs, stale or verified status, and copyable commands.
 
@@ -349,7 +349,7 @@ Do not set full paragraphs in mono. Mono is an evidence layer, not the prose voi
 Lathe Registry should open with the usable registry, not a marketing hero.
 
 - **Home:** top nav, compact product introduction, search/filter toolbar, registry table or dense recipe cards. The first viewport should show at least one real recipe row.
-- **Recipe detail:** workbench layout. Main column contains README/prose and file explorer. Right column contains install actions, Skill download state, pinned sources, build metadata, and smoke command.
+- **Recipe detail:** workbench layout. Main column contains README/prose and file explorer. Right column contains CLI download/build actions, embedded Skill state, pinned sources, build metadata, and smoke command.
 - **Submit:** contribution checklist and required recipe shape. It should read like a review guide, not a conversion form.
 - **Containers:** max content width around 1280px. Keep wide tables and file explorers inside the content width, not floating edge to edge.
 - **Spacing:** use 4px increments. Internal panel gaps should be 16-24px. Section gaps should be 64-96px depending on density.
@@ -427,7 +427,7 @@ Commands should be copyable when implemented. Use mono text, subdued chrome, and
 
 ### Action Panel
 
-`action-panel` is sticky on recipe detail pages. It owns download actions, copy install prompt, pinned source summary, auth note, and generated artifact state. It should never become a generic marketing sidebar.
+`action-panel` is sticky on recipe detail pages. It owns CLI download/build actions, pinned source summary, auth note, embedded Skill state, and generated artifact state. It should never become a generic marketing sidebar.
 
 ### Status Badges
 
@@ -449,17 +449,17 @@ Do not invent trust badges that are not backed by repository data.
 - Lead with registry utility: search, rows, detail actions, and proof.
 - Keep the Linear.app-inspired dark surface discipline: canvas, surface ladder, hairlines, restrained accent.
 - Use Lathe green only for action, focus, active state, and verified status.
-- Show real recipe data: source refs, paths, commands, generated outputs, Skill artifacts, smoke intent.
+- Show real recipe data: source refs, paths, commands, generated CLI artifacts, embedded Skill state, smoke intent.
 - Use mono for evidence tokens and commands.
 - Keep components dense enough for repeat engineering use.
 - Treat generated outputs as evidence and distribution material, not source of truth.
-- Keep copy precise: recipe, source, catalog, Skill, generated output, build metadata, smoke intent.
+- Keep copy precise: recipe, source, catalog, CLI binary, embedded Skill, build metadata, smoke intent.
 
 ### Don't
 
 - Don't make the homepage a giant marketing hero.
 - Don't use Claude-style cream, serif, and coral editorial warmth here.
-- Don't present Lathe Registry as a binary marketplace.
+- Don't present unverified CLI binaries or platforms that the build did not produce.
 - Don't imply install safety or artifact provenance unless the data exists.
 - Don't use neon grid effects, glow-heavy terminal cosplay, or decorative command art.
 - Don't add many accent colors for category tags. Use structure and text before color.

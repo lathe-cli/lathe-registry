@@ -1,10 +1,10 @@
 // CI gate: generate every recipe with a real Lathe, run the admission rules
-// against the built CLI, and refresh the Skill bundle. Same rules as
+// against the built CLI, and refresh the downloadable CLI plus evidence. Same rules as
 // `npm run preflight` — see docs/gate.md.
 //
 //   node scripts/gate.mjs                 # check every recipe
 //   node scripts/gate.mjs --recipes a,b   # check a subset
-//   node scripts/gate.mjs --write         # also refresh skills/ and .gate/ evidence
+//   node scripts/gate.mjs --write         # also refresh CLI downloads, skills/, and .gate/ evidence
 //
 // Exits non-zero if any recipe fails a blocking rule.
 
@@ -14,6 +14,7 @@ import process from "node:process";
 import yaml from "js-yaml";
 
 import { evaluate } from "./gate/rules.mjs";
+import { CLI_TARGETS, createCliArchive } from "./gate/artifact.mjs";
 import {
   ToolchainError,
   binFingerprint,
@@ -21,7 +22,8 @@ import {
   generateAndProbe,
   latheVersion,
   makeWorkdir,
-  resolveBin
+  resolveBin,
+  run
 } from "./gate/toolchain.mjs";
 
 const root = process.cwd();
@@ -134,7 +136,39 @@ async function main() {
       if (evaluation.verdict !== "GO") failed += 1;
 
       if (options.write && evaluation.verdict === "GO" && probe.generated) {
-        // The one artifact the site cannot rebuild without Lathe.
+        const cliArtifacts = [];
+        const downloadsRoot = path.join(root, "site", "public", "downloads");
+        await fs.mkdir(downloadsRoot, { recursive: true });
+        for (const target of CLI_TARGETS) {
+          const binaryName = target.os === "windows" ? `${cliName}.exe` : cliName;
+          const binaryPath = path.join(workdir, `${cliName}-${target.os}-${target.arch}`);
+          const build = await run(
+            "go",
+            ["build", "-trimpath", "-buildvcs=false", "-ldflags=-s -w", "-o", binaryPath, `./cmd/${cliName}`],
+            {
+              cwd: probe.projectDir,
+              env: { CGO_ENABLED: "0", GOOS: target.os, GOARCH: target.arch }
+            }
+          );
+          if (build.code !== 0) {
+            throw new ToolchainError(
+              `go build failed for ${target.os}/${target.arch}: ${build.stderr.trim().split("\n").slice(0, 6).join("\n")}`
+            );
+          }
+          const artifactName = `${cliName}-${target.os}-${target.arch}.tar.gz`;
+          const artifactPath = path.join(downloadsRoot, artifactName);
+          const artifact = await createCliArchive(binaryPath, artifactPath, binaryName);
+          cliArtifacts.push({
+            os: target.os,
+            arch: target.arch,
+            format: "tar.gz",
+            binary: binaryName,
+            path: `downloads/${artifactName}`,
+            size: artifact.size,
+            sha256: artifact.sha256
+          });
+        }
+
         const target = path.join(root, "skills", cliName);
         await fs.rm(target, { recursive: true, force: true });
         await fs.mkdir(path.dirname(target), { recursive: true });
@@ -156,6 +190,8 @@ async function main() {
               generated_at: new Date().toISOString(),
               command_count: probe.commandCount,
               group_count: probe.groups,
+              skill_included: probe.skillInstallOk,
+              cli_artifacts: cliArtifacts,
               derived_names: probe.synthesizedCount,
               collision_suffixed: probe.collisionSuffixed,
               warnings: evaluation.warnings.map((rule) => rule.id)

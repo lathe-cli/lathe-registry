@@ -8,6 +8,9 @@ interface Props {
 }
 
 const { title, description = "Community registry for reproducible Lathe CLI recipes." } = Astro.props;
+const registryPath = sitePath("");
+const submitPath = sitePath("submit/");
+const currentPath = Astro.url.pathname;
 ---
 
 <!doctype html>
@@ -16,11 +19,13 @@ const { title, description = "Community registry for reproducible Lathe CLI reci
     <meta charset="UTF-8" />
     <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#010605" />
+    <link rel="icon" href={sitePath("lathe-cli-logo.png")} />
     <title>{title}</title>
   </head>
   <body>
     <header class="site-header">
-      <a class="brand" href={sitePath("")}>
+      <a class="brand" href={registryPath}>
         <span class="brand-mark">
           <img src={sitePath("lathe-cli-logo.png")} alt="Lathe" />
         </span>
@@ -30,8 +35,8 @@ const { title, description = "Community registry for reproducible Lathe CLI reci
         </span>
       </a>
       <nav class="top-nav" aria-label="Primary">
-        <a href={sitePath("")}>CLI Registry</a>
-        <a href={sitePath("submit/")}>Submit</a>
+        <a href={registryPath} aria-current={currentPath === registryPath ? "page" : undefined}>Registry</a>
+        <a href={submitPath} aria-current={currentPath === submitPath ? "page" : undefined}>Submit</a>
         <a href="https://github.com/lathe-cli/lathe-registry">GitHub</a>
       </nav>
     </header>

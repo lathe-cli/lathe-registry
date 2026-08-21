@@ -1,0 +1,75 @@
+---
+import { sitePath } from "../lib/paths";
+
+const { recipe } = Astro.props;
+const sourceCount = recipe.source_refs.length;
+const source = recipe.source_refs[0];
+const sourceProvider = source?.repo_url.includes("github.com") ? "GitHub" : source?.backend || "source";
+const verified = recipe.gate?.verdict === "GO";
+const cliArtifacts = recipe.artifacts.filter((artifact) => artifact.kind === "cli");
+const installable = cliArtifacts.length > 0;
+const outputLabel = installable ? `${cliArtifacts.length} builds` : verified ? "Build verified" : "—";
+const gateLabel = verified ? "Gate passed" : "Not run";
+const sourceSearchNames = recipe.source_refs
+  .map((source) => `${source.name} ${source.display_name} ${source.repo_url}`)
+  .join(" ");
+const searchText = [
+  recipe.display_name,
+  recipe.name,
+  recipe.cli_name,
+  recipe.category,
+  recipe.description,
+  sourceSearchNames
+].join(" ").toLowerCase();
+const words = recipe.display_name.split(/\s+/).filter(Boolean);
+const monogram = (words.length > 1
+  ? `${words[0][0]}${words[1][0]}`
+  : words[0].slice(0, 2)
+).toUpperCase();
+---
+
+<tr
+  data-recipe-row
+  data-search-text={searchText}
+  data-category={recipe.category}
+  data-verified={String(verified)}
+  data-installable={String(installable)}
+  data-name={recipe.display_name.toLowerCase()}
+  data-sources={sourceCount}
+>
+  <td class="recipe-cell">
+    <div class="recipe-identity">
+      <span class="recipe-monogram" aria-hidden="true">{monogram}</span>
+      <span class="recipe-name">
+        <strong>{recipe.display_name}</strong>
+        <code>{recipe.name}</code>
+      </span>
+    </div>
+  </td>
+  <td>
+    <span class="mobile-label">CLI</span>
+    <code class="cell-code">{recipe.cli_name}</code>
+  </td>
+  <td>
+    <span class="mobile-label">Domain</span>
+    <span class="cell-primary">{recipe.category}</span>
+  </td>
+  <td>
+    <span class="mobile-label">Sources</span>
+    <span class="cell-primary">{sourceCount} pinned ref{sourceCount === 1 ? "" : "s"}</span>
+    <span class="cell-secondary">{sourceProvider}</span>
+  </td>
+  <td>
+    <span class="mobile-label">Gate</span>
+    <span class:list={["evidence-status", verified && "verified"]}>{gateLabel}</span>
+  </td>
+  <td>
+    <span class="mobile-label">Output</span>
+    <span class:list={["evidence-status", installable && "verified"]}>{outputLabel}</span>
+  </td>
+  <td class="recipe-actions">
+    <a class="button compact primary-outline" href={sitePath(`cli/${recipe.name}/`)}>
+      {installable ? "View downloads" : "View recipe"}
+    </a>
+  </td>
+</tr>

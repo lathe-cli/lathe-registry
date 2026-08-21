@@ -24,8 +24,7 @@ const safeMarked = new Marked({
 const readme = safeMarked.parse(recipe.readme_markdown);
 const fileCount = recipe.files.length;
 const sourceCount = recipe.source_refs.length;
-const skillArtifact = recipe.artifacts.find((artifact) => artifact.kind === "skill");
-const buildPath = recipe.build_path || "pending";
+const cliArtifacts = recipe.artifacts.filter((artifact) => artifact.kind === "cli");
 
 function escapeHtml(value: string): string {
   return value.replace(/[&<>"']/g, (char) => {
@@ -64,12 +63,12 @@ function escapeHtml(value: string): string {
     </div>
     <div class="detail-evidence" aria-label="Recipe evidence">
       <div>
-        <span>Skill bundle</span>
-        <strong>{skillArtifact ? skillArtifact.path : "pending"}</strong>
+        <span>CLI binaries</span>
+        <strong>{cliArtifacts.length > 0 ? `${cliArtifacts.length} platform builds` : "build locally"}</strong>
       </div>
       <div>
-        <span>Build metadata</span>
-        <code>{buildPath}</code>
+        <span>Skill</span>
+        <strong>{recipe.gate?.skill_included ? "Included in CLI" : "Not verified"}</strong>
       </div>
       <div>
         <span>Source refs</span>
@@ -93,8 +92,8 @@ function escapeHtml(value: string): string {
       </div>
       <div>
         <span>03</span>
-        <strong>Inspect</strong>
-        <code>{recipe.cli_name} commands show ... --json</code>
+        <strong>Search</strong>
+        <code>{recipe.cli_name} search "{recipe.smoke.intent}" --json</code>
       </div>
     </div>
   </section>

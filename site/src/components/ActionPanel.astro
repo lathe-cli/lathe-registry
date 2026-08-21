@@ -2,60 +2,70 @@
 import { sitePath } from "../lib/paths";
 
 const { recipe } = Astro.props;
-const skillArtifact = recipe.artifacts.find((artifact) => artifact.kind === "skill");
-const cliArtifact = recipe.artifacts.find((artifact) => artifact.kind === "cli");
+const cliArtifacts = recipe.artifacts.filter((artifact) => artifact.kind === "cli");
+const defaultArtifact = cliArtifacts[0];
 const recipeUrl = `https://github.com/lathe-cli/lathe-registry/tree/main/${recipe.recipe_path}`;
-const prompt = `Install the Lathe registry recipe "${recipe.name}".
+const gatePassed = recipe.gate?.verdict === "GO";
+const buildCommand = `node scripts/gate.mjs --recipes ${recipe.name} --write`;
+const artifactLabel = cliArtifacts.length > 0 ? `${cliArtifacts.length} platform builds` : "not built";
 
-Use the recipe source from:
-${recipeUrl}
-
-Clone the registry, copy the recipe into a new workspace, inspect cli.yaml and specs/sources.yaml, run Lathe bootstrap/codegen, build the generated CLI, then install the generated Skill only after verifying the catalog with:
-${recipe.cli_name} commands schema --json
-${recipe.cli_name} commands --json
-${recipe.cli_name} search "${recipe.smoke.intent}" --json`;
+function targetLabel(artifact) {
+  const os = { darwin: "macOS", linux: "Linux", windows: "Windows" }[artifact.os] ?? artifact.os;
+  return `${os} / ${artifact.arch}`;
+}
 ---
 
 <aside class="action-panel">
   <div class="panel-head">
-    <span class="panel-label">Install surface</span>
+    <span class="panel-label">Recipe actions</span>
     <h2><code>{recipe.cli_name}</code></h2>
     <p>{recipe.auth.notes}</p>
   </div>
 
-  {cliArtifact ? (
-    <a class="button primary block" href={sitePath(cliArtifact.path)} download>Download CLI</a>
-  ) : (
-    <button class="button block" type="button" disabled>CLI artifact pending</button>
+  {defaultArtifact && (
+    <>
+      <label class="artifact-picker select-control">
+        <span class="panel-label">Platform</span>
+        <select data-artifact-select>
+          {cliArtifacts.map((artifact) => (
+            <option value={sitePath(artifact.path)}>{targetLabel(artifact)}</option>
+          ))}
+        </select>
+      </label>
+      <a class="button primary block" href={sitePath(defaultArtifact.path)} download data-artifact-download>
+        Download CLI (.tar.gz)
+      </a>
+    </>
   )}
 
-  {skillArtifact ? (
-    <a class="button block" href={sitePath(skillArtifact.path)} download>Download Skill</a>
-  ) : (
-    <button class="button block" type="button" disabled>Skill pending</button>
-  )}
-
-  <button class="button block" type="button" data-copy-prompt={prompt}>Copy install prompt</button>
+  <button class:list={["button block", !defaultArtifact && "primary"]} type="button" data-copy-value={buildCommand}>
+    {defaultArtifact ? "Copy build command" : "Build CLI locally"}
+  </button>
   <a class="button ghost block" href={recipeUrl}>View recipe source</a>
 
   <div class="prompt-preview">
-    <span class="panel-label">Agent prompt</span>
-    <code>Install recipe "{recipe.name}" and verify {recipe.cli_name} catalog.</code>
+    <span class="panel-label">Local build</span>
+    <code>{buildCommand}</code>
+    <small>Writes <code>site/public/downloads/{recipe.cli_name}-&lt;os&gt;-&lt;arch&gt;.tar.gz</code></small>
   </div>
 
   <div class="artifact-list">
-    <span class="panel-label">Generated outputs</span>
+    <span class="panel-label">Current evidence</span>
+    <p>
+      <span>Gate</span>
+      <code>{gatePassed ? "passed" : "not run"}</code>
+    </p>
+    <p>
+      <span>CLI binary</span>
+      <code>{artifactLabel}</code>
+    </p>
+    <p>
+      <span>Skill</span>
+      <code>{recipe.gate?.skill_included ? "included in CLI" : "not verified"}</code>
+    </p>
     <p>
       <span>Build metadata</span>
-      <code>{recipe.build_path || "pending"}</code>
-    </p>
-    <p>
-      <span>Skill path</span>
-      <code>{recipe.skill_path || "pending"}</code>
-    </p>
-    <p>
-      <span>CLI artifact</span>
-      <code>{cliArtifact ? cliArtifact.path : "pending"}</code>
+      <code>{recipe.build_path}</code>
     </p>
   </div>
 
@@ -71,13 +81,27 @@ ${recipe.cli_name} search "${recipe.smoke.intent}" --json`;
 </aside>
 
 <script>
-  for (const button of document.querySelectorAll("[data-copy-prompt]")) {
+  const artifactSelect = document.querySelector<HTMLSelectElement>("[data-artifact-select]");
+  const artifactDownload = document.querySelector<HTMLAnchorElement>("[data-artifact-download]");
+  artifactSelect?.addEventListener("change", () => {
+    artifactDownload?.setAttribute("href", artifactSelect.value);
+  });
+
+  for (const button of document.querySelectorAll<HTMLButtonElement>("[data-copy-value]")) {
     button.addEventListener("click", async () => {
-      const value = button.getAttribute("data-copy-prompt") || "";
-      button.textContent = "Prompt copied";
-      await navigator.clipboard?.writeText(value).catch(() => undefined);
+      const value = button.dataset.copyValue ?? "";
+      const label = button.textContent;
+
+      try {
+        if (!navigator.clipboard) throw new Error("clipboard unavailable");
+        await navigator.clipboard.writeText(value);
+        button.textContent = "Copied";
+      } catch {
+        button.textContent = "Copy failed";
+      }
+
       setTimeout(() => {
-        button.textContent = "Copy install prompt";
+        button.textContent = label;
       }, 1600);
     });
   }

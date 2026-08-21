@@ -4,78 +4,244 @@
   "title": "Lathe registry index",
   "type": "object",
   "required": [
+    "$schema",
     "schema_version",
     "generated_at",
     "recipes"
   ],
   "properties": {
+    "$schema": {
+      "const": "https://lathe-cli.github.io/lathe-registry/schema/index.schema.json"
+    },
     "schema_version": {
       "type": "integer",
       "const": 1
     },
     "generated_at": {
-      "type": "string"
+      "type": "string",
+      "format": "date-time"
     },
     "recipes": {
       "type": "array",
       "items": {
-        "type": "object",
-        "required": [
-          "name",
-          "display_name",
-          "cli_name",
-          "category",
-          "description",
-          "auth",
-          "recipe_path",
-          "readme_path",
-          "skill_path",
-          "build_path",
-          "source_refs"
-        ],
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "display_name": {
-            "type": "string"
-          },
-          "cli_name": {
-            "type": "string"
-          },
-          "category": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "auth": {
-            "type": "object"
-          },
-          "recipe_path": {
-            "type": "string"
-          },
-          "readme_path": {
-            "type": "string"
-          },
-          "catalog_path": {
-            "type": "string"
-          },
-          "skill_path": {
-            "type": "string"
-          },
-          "build_path": {
-            "type": "string"
-          },
-          "artifacts": {
-            "type": "array"
-          },
-          "source_refs": {
-            "type": "array"
+        "$ref": "#/$defs/recipe"
+      }
+    }
+  },
+  "$defs": {
+    "recipe": {
+      "type": "object",
+      "required": [
+        "name",
+        "display_name",
+        "cli_name",
+        "category",
+        "description",
+        "auth",
+        "gate",
+        "artifacts",
+        "source_refs"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "display_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "cli_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "category": {
+          "type": "string",
+          "minLength": 1
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "auth": {
+          "$ref": "#/$defs/auth"
+        },
+        "gate": {
+          "oneOf": [
+            {
+              "$ref": "#/$defs/gate"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "artifacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/artifact"
           }
         },
-        "additionalProperties": true
-      }
+        "source_refs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/source"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "auth": {
+      "type": "object",
+      "required": [
+        "type",
+        "notes"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "minLength": 1
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "gate": {
+      "type": "object",
+      "required": [
+        "verdict",
+        "generated_at",
+        "lathe_version",
+        "command_count",
+        "group_count",
+        "skill_included",
+        "warnings"
+      ],
+      "properties": {
+        "verdict": {
+          "enum": [
+            "GO",
+            "NO-GO"
+          ]
+        },
+        "generated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "lathe_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "command_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "group_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "skill_included": {
+          "type": "boolean"
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "artifact": {
+      "type": "object",
+      "required": [
+        "os",
+        "arch",
+        "format",
+        "binary",
+        "url",
+        "size",
+        "sha256"
+      ],
+      "properties": {
+        "os": {
+          "enum": [
+            "darwin",
+            "linux",
+            "windows"
+          ]
+        },
+        "arch": {
+          "enum": [
+            "amd64",
+            "arm64"
+          ]
+        },
+        "format": {
+          "const": "tar.gz"
+        },
+        "binary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "url": {
+          "type": "string",
+          "pattern": "^downloads/[^/]+\\.tar\\.gz$"
+        },
+        "size": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "source": {
+      "type": "object",
+      "required": [
+        "name",
+        "display_name",
+        "backend",
+        "repo_url",
+        "pinned_tag",
+        "files"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "display_name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "backend": {
+          "type": "string",
+          "minLength": 1
+        },
+        "repo_url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "pinned_tag": {
+          "type": "string",
+          "minLength": 1
+        },
+        "files": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "additionalProperties": false
     }
   },
   "additionalProperties": false

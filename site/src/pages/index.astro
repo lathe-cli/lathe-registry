@@ -1,80 +1,188 @@
 ---
 import SiteShell from "../layouts/SiteShell.astro";
-import RecipeCard from "../components/RecipeCard.astro";
-import { sitePath } from "../lib/paths";
+import RecipeRow from "../components/RecipeRow.astro";
 import registry from "../data/registry.json";
 
 const recipeCount = registry.recipes.length;
 const sourceCount = registry.recipes.reduce((total, recipe) => total + recipe.source_refs.length, 0);
-const skillCount = registry.recipes.filter((recipe) => recipe.skill_path).length;
+const verifiedCount = registry.recipes.filter((recipe) => recipe.gate?.verdict === "GO").length;
+const installableCount = registry.recipes.filter((recipe) =>
+  recipe.artifacts.some((artifact) => artifact.kind === "cli")
+).length;
+const artifactCount = registry.recipes.reduce(
+  (total, recipe) => total + recipe.artifacts.filter((artifact) => artifact.kind === "cli").length,
+  0
+);
+const categories = [...new Set(registry.recipes.map((recipe) => recipe.category))].sort();
 ---
 
 <SiteShell title="Lathe Registry">
   <section class="registry-intro">
     <div>
       <h1>Lathe Registry</h1>
-      <p>Reproducible Lathe CLI recipes with pinned sources, generated Skill bundles, build metadata, and exact inspection commands.</p>
+      <p>Build and download generated CLIs from pinned recipe sources.</p>
     </div>
-    <div class="registry-intro-actions">
-      <div class="command-strip" aria-label="Registry command preview">
-        <span>$</span>
-        <code>lathe registry show daocloud-dce</code>
+    <dl class="registry-metrics" aria-label="Registry summary">
+      <div>
+        <dt>Recipe sources</dt>
+        <dd>{recipeCount}</dd>
       </div>
-      <div class="hero-actions">
-        <a class="button primary" href={sitePath("submit/")}>Submit recipe</a>
-        <a class="button ghost" href="https://github.com/lathe-cli/lathe-registry">View source</a>
+      <div>
+        <dt>Pinned refs</dt>
+        <dd>{sourceCount}</dd>
       </div>
-    </div>
+      <div>
+        <dt>CLI binaries</dt>
+        <dd>{artifactCount}</dd>
+      </div>
+    </dl>
   </section>
 
-  <section class="registry-summary" aria-label="Registry evidence summary">
-    <div>
-      <span>Recipes</span>
-      <strong>{recipeCount} reproducible recipe live</strong>
-    </div>
-    <div>
-      <span>Pinned sources</span>
-      <strong>{sourceCount} upstream source refs tracked</strong>
-    </div>
-    <div>
-      <span>Skill bundles</span>
-      <strong>{skillCount} generated Skill ready</strong>
-    </div>
+  <section class="registry-search-panel" aria-label="Search recipes">
+    <label>
+      <span class="visually-hidden">Search recipes</span>
+      <input
+        type="search"
+        placeholder="Search recipes, CLIs, domains, or source repos…"
+        autocomplete="off"
+        data-registry-search
+      />
+    </label>
   </section>
 
-  <section class="toolbar" aria-label="Registry controls">
-    <div class="registry-search">
-      <span class="tab active">CLI Registry</span>
-      <label>
-        <span>Search</span>
-        <input type="search" placeholder="Search CLIs, modules, auth..." data-registry-search />
+  <section class="registry-controls" aria-label="Registry controls">
+    <div class="filter-group" aria-label="Evidence filter">
+      <button class="filter-button active" type="button" data-status-filter="all" aria-pressed="true">All</button>
+      <button class="filter-button" type="button" data-status-filter="verified" aria-pressed="false">
+        Gate passed <span>{verifiedCount}</span>
+      </button>
+      <button class="filter-button" type="button" data-status-filter="installable" aria-pressed="false">
+        Downloadable <span>{installableCount}</span>
+      </button>
+    </div>
+    <div class="select-group">
+      <label class="select-control">
+        <span class="visually-hidden">Filter by domain</span>
+        <select data-domain-filter>
+          <option value="all">All domains</option>
+          {categories.map((category) => <option value={category}>{category}</option>)}
+        </select>
+      </label>
+      <label class="select-control">
+        <span class="visually-hidden">Sort recipes</span>
+        <select data-sort>
+          <option value="name-asc">Name (A–Z)</option>
+          <option value="name-desc">Name (Z–A)</option>
+          <option value="sources-desc">Most sources</option>
+        </select>
       </label>
     </div>
-    <div class="registry-count" data-registry-count>{recipeCount} recipe live</div>
   </section>
 
-  <section class="registry-grid" aria-label="Available CLIs">
-    {registry.recipes.map((recipe) => <RecipeCard recipe={recipe} />)}
+  <section class="registry-table-shell" aria-label="Available recipes">
+    <table class="registry-table">
+      <caption class="visually-hidden">Lathe recipes and their current evidence</caption>
+      <colgroup>
+        <col class="column-recipe" />
+        <col class="column-cli" />
+        <col class="column-domain" />
+        <col class="column-sources" />
+        <col class="column-gate" />
+        <col class="column-output" />
+        <col class="column-action" />
+      </colgroup>
+      <thead>
+        <tr>
+          <th scope="col">Recipe</th>
+          <th scope="col">CLI</th>
+          <th scope="col">Domain</th>
+          <th scope="col">Sources</th>
+          <th scope="col">Gate</th>
+          <th scope="col">CLI artifact</th>
+          <th scope="col">Action</th>
+        </tr>
+      </thead>
+      <tbody data-registry-body>
+        {registry.recipes.map((recipe) => <RecipeRow recipe={recipe} />)}
+      </tbody>
+    </table>
+    <p class="registry-empty" data-registry-empty hidden>No recipes match these filters.</p>
+  </section>
+
+  <div class="registry-footer-row">
+    <p class="registry-count" data-registry-count aria-live="polite">{recipeCount} recipes</p>
+  </div>
+
+  <section class="registry-notes" aria-label="Registry help">
+    <div class="build-note">
+      <div>
+        <strong>Build a CLI</strong>
+        <span>Generate, verify, and retain the CLI for your current platform.</span>
+      </div>
+      <code>{"node scripts/gate.mjs --recipes <recipe> --write"}</code>
+    </div>
+    <div class="about-note">
+      <strong>About this registry</strong>
+      <p>Recipes are the source of truth. Each generated CLI includes its Skill; no separate Skill download is required.</p>
+    </div>
   </section>
 </SiteShell>
 
 <script>
-  const input = document.querySelector("[data-registry-search]");
-  const cards = Array.from(document.querySelectorAll("[data-recipe-card]"));
-  const count = document.querySelector("[data-registry-count]");
+  const search = document.querySelector<HTMLInputElement>("[data-registry-search]");
+  const body = document.querySelector<HTMLTableSectionElement>("[data-registry-body]");
+  const rows = Array.from(document.querySelectorAll<HTMLTableRowElement>("[data-recipe-row]"));
+  const statusButtons = Array.from(document.querySelectorAll<HTMLButtonElement>("[data-status-filter]"));
+  const domain = document.querySelector<HTMLSelectElement>("[data-domain-filter]");
+  const sort = document.querySelector<HTMLSelectElement>("[data-sort]");
+  const count = document.querySelector<HTMLElement>("[data-registry-count]");
+  const empty = document.querySelector<HTMLElement>("[data-registry-empty]");
+  let status = "all";
 
-  input?.addEventListener("input", () => {
-    const query = input.value.trim().toLowerCase();
+  function updateRegistry() {
+    const query = search?.value.trim().toLowerCase() ?? "";
+    const category = domain?.value ?? "all";
+    const order = sort?.value ?? "name-asc";
+    const orderedRows = [...rows].sort((left, right) => {
+      if (order === "sources-desc") {
+        return Number(right.dataset.sources) - Number(left.dataset.sources);
+      }
+
+      const comparison = (left.dataset.name ?? "").localeCompare(right.dataset.name ?? "");
+      return order === "name-desc" ? -comparison : comparison;
+    });
     let visible = 0;
 
-    for (const card of cards) {
-      const matches = card.getAttribute("data-search-text")?.includes(query) ?? false;
-      card.classList.toggle("hidden", !matches);
+    for (const row of orderedRows) {
+      const matchesQuery = row.dataset.searchText?.includes(query) ?? false;
+      const matchesCategory = category === "all" || row.dataset.category === category;
+      const matchesStatus =
+        status === "all" ||
+        (status === "verified" && row.dataset.verified === "true") ||
+        (status === "installable" && row.dataset.installable === "true");
+      const matches = matchesQuery && matchesCategory && matchesStatus;
+      row.hidden = !matches;
       if (matches) visible += 1;
     }
 
-    if (count) {
-      count.textContent = `${visible} recipe${visible === 1 ? "" : "s"} live`;
-    }
-  });
+    body?.append(...orderedRows);
+    if (count) count.textContent = `${visible} recipe${visible === 1 ? "" : "s"}`;
+    if (empty) empty.hidden = visible !== 0;
+  }
+
+  search?.addEventListener("input", updateRegistry);
+  domain?.addEventListener("change", updateRegistry);
+  sort?.addEventListener("change", updateRegistry);
+
+  for (const button of statusButtons) {
+    button.addEventListener("click", () => {
+      status = button.dataset.statusFilter ?? "all";
+      for (const candidate of statusButtons) {
+        const active = candidate === button;
+        candidate.classList.toggle("active", active);
+        candidate.setAttribute("aria-pressed", String(active));
+      }
+      updateRegistry();
+    });
+  }
 </script>

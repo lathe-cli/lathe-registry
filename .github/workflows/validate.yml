@@ -67,8 +67,8 @@ jobs:
       - run: npm test
 
       # Generates every recipe with a real Lathe, runs the admission rules
-      # against the built CLI, and refreshes skills/ — the one artifact the site
-      # build cannot reproduce on its own. Blocking rules fail the build.
+      # against the built CLI, and retains the host binary plus reviewable Skill
+      # evidence. Blocking rules fail the build.
       - run: node scripts/gate.mjs --write
 
       - run: npm run build
