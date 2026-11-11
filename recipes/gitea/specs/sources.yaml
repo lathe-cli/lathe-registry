@@ -1,0 +1,19 @@
+sources:
+  gitea_api:
+    default_hostname: localhost:3000
+    repo_url: https://github.com/go-gitea/gitea
+    # pinned to the v28.3.0 release as of 2026-11-01
+    pinned_tag: v28.3.0
+    backend: swagger
+    # Gitea commits a build-time template, not a runnable spec: its prefix is
+    #   /GITEA-API-APP-SUBURL/api/v1
+    # and the server substitutes the placeholder with the instance sub-URL at
+    # request time. Generating from it directly yields
+    # /GITEA-API-APP-SUBURL/api/v1/... which cannot be called.
+    #
+    # base_path replaces that prefix, giving /api/v1/... . Required, not an
+    # optional optimisation. Needs lathe >= 0.7.0 (lathe-cli/lathe#233).
+    base_path: /api/v1
+    swagger:
+      files:
+        - templates/swagger/v1-swagger.generated.json

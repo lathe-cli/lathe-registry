@@ -1,0 +1,21 @@
+name: gitea
+display_name: Gitea
+cli_name: gitea
+category: source-control
+homepage: https://github.com/go-gitea/gitea
+description: Generated Gitea CLI and agent Skill for repositories, issues, pull requests, releases, organizations, Actions, and administration.
+maintainers:
+  - github: Sevyn17
+auth:
+  type: bearer
+  notes: >-
+    Requires a Gitea application token in the Authorization header. Create one
+    under Settings > Applications with the scopes you need, then run
+    `gitea auth login --hostname <host>` and verify it with
+    `gitea auth status --hostname <host>`. Gitea accepts both
+    `Authorization: token <token>` and `Authorization: Bearer <token>`, so the
+    bearer type works as-is. Administration commands additionally require a
+    site-admin account.
+smoke:
+  intent: list issues
+  expect: issue-list-issues

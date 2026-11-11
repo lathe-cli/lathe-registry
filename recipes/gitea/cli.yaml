@@ -1,0 +1,14 @@
+cli:
+  name: gitea
+  short: "Command-line tool for Gitea"
+
+skill:
+  bundle: true
+
+auth:
+  validate:
+    method: GET
+    path: /api/v1/user
+    display:
+      username_field: login
+      fallback_field: email
