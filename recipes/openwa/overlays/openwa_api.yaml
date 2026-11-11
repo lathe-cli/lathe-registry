@@ -1,0 +1,45 @@
+# OpenWA 的 ingress 转发路径在 spec 里有缺陷：
+#
+#   "/api/ingress/{pluginId}/{instanceId}/{path}": {
+#     "get": {
+#       "parameters": [
+#         { "name": "pluginId",   "in": "path" },
+#         { "name": "instanceId", "in": "path" }
+#         // 没有 {path} 的 parameter 定义
+#       ]
+#     }
+#   }
+#
+# 模板里有 3 个变量，只声明了 2 个参数。{path} 永远无法被填充，
+# 生成的命令会带着字面量 {path} 发请求，因此这 5 个操作不可用。
+#
+# overlay 只能改已有参数、不能新增缺失参数，所以这里用 ignore 移除。
+# 上游修好后可以删掉这一段。
+#
+# 相关：lathe-registry PR #12（G10 规则抓到的问题）
+commands:
+  ingress-controller-receive-get:
+    match:
+      method: GET
+      path: /api/ingress/{pluginId}/{instanceId}/{path}
+    ignore: true
+  ingress-controller-receive-post:
+    match:
+      method: POST
+      path: /api/ingress/{pluginId}/{instanceId}/{path}
+    ignore: true
+  ingress-controller-receive-put:
+    match:
+      method: PUT
+      path: /api/ingress/{pluginId}/{instanceId}/{path}
+    ignore: true
+  ingress-controller-receive-delete:
+    match:
+      method: DELETE
+      path: /api/ingress/{pluginId}/{instanceId}/{path}
+    ignore: true
+  ingress-controller-receive-patch:
+    match:
+      method: PATCH
+      path: /api/ingress/{pluginId}/{instanceId}/{path}
+    ignore: true
