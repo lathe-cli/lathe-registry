@@ -9,7 +9,14 @@ Superset repository, and generated code is not the source of truth.
 ## Module
 
 - `superset`: dashboards, charts, datasets, databases, queries, reports,
-  security, and other Superset API operations (276 commands across 28 groups).
+  security, and other Superset API operations (273 commands across 38 groups).
+
+The overlay excludes three operations whose parameter or multipart schemas
+Lathe v0.7.0-rc.1 does not support:
+
+- `GET /api/v1/security/roles/search/`
+- `POST /api/v1/database/{pk}/upload/`
+- `POST /api/v1/database/upload_metadata/`
 
 ## Auth
 

@@ -1,0 +1,16 @@
+commands:
+  get-security-roles-search:
+    match:
+      method: GET
+      path: /api/v1/security/roles/search/
+    ignore: true
+  post-database-pk-upload:
+    match:
+      method: POST
+      path: /api/v1/database/{pk}/upload/
+    ignore: true
+  post-database-upload-metadata:
+    match:
+      method: POST
+      path: /api/v1/database/upload_metadata/
+    ignore: true
