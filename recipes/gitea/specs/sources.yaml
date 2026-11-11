@@ -2,16 +2,17 @@ sources:
   gitea_api:
     default_hostname: localhost:3000
     repo_url: https://github.com/go-gitea/gitea
-    # pinned to v28.3.0 as of 2026-11-01
-    pinned_tag: 4f5a3e13e5f3aca85d830e3a9024c893b0bbf1e1
+    # pinned to the v28.3.0 release as of 2026-11-01
+    pinned_tag: v28.3.0
     backend: swagger
-    # Gitea 提交的 spec 是构建期模板：basePath 为
+    # Gitea commits a build-time template, not a runnable spec: its prefix is
     #   /GITEA-API-APP-SUBURL/api/v1
-    # Gitea 在运行时用实例的 ROOT_URL 替换这个占位符。直接生成会得到
-    # /GITEA-API-APP-SUBURL/api/v1/... 这种不可用路径。
+    # and the server substitutes the placeholder with the instance sub-URL at
+    # request time. Generating from it directly yields
+    # /GITEA-API-APP-SUBURL/api/v1/... which cannot be called.
     #
-    # base_path 会替换掉该前缀，得到 /api/v1/... 。必需，不是可选优化。
-    # 依赖 lathe >= 0.7.0（lathe-cli/lathe#233）。
+    # base_path replaces that prefix, giving /api/v1/... . Required, not an
+    # optional optimisation. Needs lathe >= 0.7.0 (lathe-cli/lathe#233).
     base_path: /api/v1
     swagger:
       files:
