@@ -207,6 +207,14 @@ export async function generateAndProbe({ latheBin, cliName, cliYaml, sourcesYaml
   probe.collisionSuffixed = suffixed.length;
   probe.collisionSamples = suffixed.slice(0, 3).map((command) => command.use);
   probe.groups = [...new Set(operations.map((command) => command.group).filter(Boolean))].length;
+  // 让规则能在单进程里检查全部命令的 method / path_template，
+  // 不必为每条命令再启动一次 CLI。只保留规则需要的字段，避免 probe 过大。
+  probe.commands = operations.map((command) => ({
+    use: command.use,
+    method: command.http?.method,
+    path: command.http?.path_template,
+    flags: (command.flags ?? []).map((flag) => flag.flag ?? flag.name).filter(Boolean)
+  }));
 
   if (intent) {
     const searchRun = await run(cliBin, ["search", intent, "--json"]);
