@@ -269,6 +269,88 @@ function g9NameQuality(input) {
   return result("G9", "derived command names", "pass", `${pct}% derived names`);
 }
 
+// G10: 每条命令的 method 和 path_template 必须自洽。
+//
+// commands --json 已带 method 和完整 path_template，所以一个进程就能检查
+// 全部命令，不必为每条命令启动一次 CLI，也不必合成参数。
+//
+// 三类阻塞缺陷：
+//   - method 不是已知的 HTTP 动词
+//   - path 里有 {var} 但没有对应 flag（生成代码永远填不上这个位置）
+//   - path_template 不以配方声明的 base_path 开头（base_path 没生效）
+const KNOWN_METHODS = new Set(["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"]);
+
+function g10PathIntegrity(input) {
+  const { probe } = input;
+  const unavailable = unavailableProbe(probe);
+  if (unavailable) return result("G10", "path integrity", "skip", unavailable);
+
+  const commands = probe.commands ?? [];
+  if (commands.length === 0) {
+    return result("G10", "path integrity", "skip", "probe carried no command list");
+  }
+
+  const declaredBasePaths = sourceEntries(input)
+    .map(([, source]) => source.base_path)
+    .filter((value) => typeof value === "string" && value.length > 0);
+
+  const badMethod = [];
+  const missingFlag = [];
+  const wrongBase = [];
+
+  for (const command of commands) {
+    const method = String(command.method ?? "").toUpperCase();
+    if (!KNOWN_METHODS.has(method)) {
+      badMethod.push(`${command.use}: method "${command.method ?? ""}"`);
+    }
+
+    const path = String(command.path ?? "");
+    const variables = [...path.matchAll(/\{([^}]+)\}/g)].map((match) => match[1]);
+    const flags = new Set(command.flags ?? []);
+    for (const variable of variables) {
+      // Lathe 会把路径变量名规范化成 flag 名：camelCase 拆成 kebab-case，
+      // 下划线换成连字符，再转小写。例如 {runner_id} -> runner-id、
+      // {pageName} -> page-name、{apiID} -> api-id。
+      // 直接按原名比对会把 Gitea 的 71/537 条命令误判成"无法填参"。
+      const normalized = variable
+        .replace(/([A-Z]+)([A-Z][a-z])/g, "$1-$2")
+        .replace(/([a-z0-9])([A-Z])/g, "$1-$2")
+        .replace(/_/g, "-")
+        .toLowerCase();
+      if (!flags.has(variable) && !flags.has(normalized)) {
+        missingFlag.push(`${command.use}: {${variable}} has no flag`);
+      }
+    }
+
+    // 只在配方确实声明了 base_path 时检查前缀，否则无从判断
+    if (declaredBasePaths.length > 0) {
+      const matched = declaredBasePaths.some(
+        (base) => path === base || path.startsWith(`${base}/`)
+      );
+      if (!matched) wrongBase.push(`${command.use}: ${path}`);
+    }
+  }
+
+  const problems = [];
+  if (badMethod.length > 0) {
+    problems.push(`${badMethod.length} command(s) with an unknown HTTP method: ${badMethod.slice(0, 3).join("; ")}`);
+  }
+  if (missingFlag.length > 0) {
+    problems.push(`${missingFlag.length} command(s) with an unfillable path variable: ${missingFlag.slice(0, 3).join("; ")}`);
+  }
+  if (wrongBase.length > 0) {
+    problems.push(
+      `${wrongBase.length} path(s) outside the declared base_path ${declaredBasePaths.join("|")}: ` +
+      wrongBase.slice(0, 3).join("; ")
+    );
+  }
+
+  if (problems.length > 0) {
+    return result("G10", "path integrity", "fail", problems.join(" | "));
+  }
+  const base = declaredBasePaths.length > 0 ? ` under ${declaredBasePaths.join("|")}` : "";
+  return result("G10", "path integrity", "pass", `${commands.length} command(s)${base}`);
+}
 function warnings(input) {
   const out = [];
   const { probe } = input;
@@ -355,7 +437,8 @@ export function evaluate(input) {
     g6CommandFloor(input),
     g7SmokeSearch(input),
     g8AgentSurface(input),
-    g9NameQuality(input)
+    g9NameQuality(input),
+    g10PathIntegrity(input)
   ];
   const warns = [...rules.filter((rule) => rule.status === "warn"), ...warnings(input)];
   const blocking = rules.filter((rule) => rule.status === "fail");
